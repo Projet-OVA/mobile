@@ -21,18 +21,18 @@ List<CarouselItem> carouselItems = [
     backgroundColor: Color.fromARGB(252, 241, 225, 1),
     title: 'Parcours citoyen',
     description: 'C\’est quoi être citoyen aujourd\’hui ?',
-    imageUrl: 'images/couple.png',
+    imageUrl: 'assets/images/couple.png',
   ),
   CarouselItem(
     backgroundColor: Color.fromARGB(85, 121, 207, 01),
     title: 'Parcours citoyen',
     description: 'Comment organiser un petit défi citoyen avec tes amis ?',
-    imageUrl: 'images/trio.png',
+    imageUrl: 'assets/images/trio.png',
   ),
   CarouselItem(
      backgroundColor: Color.fromARGB(85, 121, 207, 01),
     title: 'Parcours citoyen',
     description: 'Comment organiser un petit défi citoyen avec tes amis ?',
-    imageUrl: 'images/trio.png',
+    imageUrl: 'assets/images/trio.png',
   ),
 ];

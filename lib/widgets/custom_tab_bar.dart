@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/home/home_page.dart';
+import '../screens/home_page.dart';
 
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar({super.key});

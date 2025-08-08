@@ -36,7 +36,7 @@ class CustomCard extends StatelessWidget {
                   children: [
                     Container(
                       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 60),
-                      padding: const EdgeInsets.only(left: 8, top: 4, bottom: 4, right: 1),
+                      padding: const EdgeInsets.only(left: 8, top: 4, bottom: 4, right: 9),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),

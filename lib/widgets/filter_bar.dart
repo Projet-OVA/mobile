@@ -20,13 +20,13 @@ class _FilterBarState extends State<FilterBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 28, bottom: 15),
+      padding: const EdgeInsets.only(left: 18, bottom: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: List.generate(filters.length, (index) {
           final item = filters[index];
           return Padding(
-            padding: const EdgeInsets.only(right: 25),
+            padding: const EdgeInsets.only(right: 2),
             child: GestureDetector(
               onTap: () {
                 setState(() {

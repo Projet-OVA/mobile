@@ -11,7 +11,7 @@ class ActionDart extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundImage: AssetImage('../../assets/images/profile.png'),
+            backgroundImage: AssetImage('assets/images/profile.png'),
           ),
 
           const SizedBox(width: 11),
