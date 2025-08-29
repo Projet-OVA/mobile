@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
                   Padding(
                     padding: EdgeInsets.only(left: 20),
                     child: Text(
-                      'Comprendre la citoyenneté',
+                      'Comprendre la citoyenneté citizen',
                       style: TextStyle(color: Color(0xFF1C1C1C)),
                     ),
                   ),
