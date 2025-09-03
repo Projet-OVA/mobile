@@ -9,11 +9,6 @@ class ActionDart extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: AssetImage('assets/images/profile.png'),
-          ),
-
           const SizedBox(width: 11),
 
           Expanded(

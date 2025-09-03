@@ -11,10 +11,10 @@ class _FilterBarState extends State<FilterBar> {
   int selectedIndex = 0;
 
   final List<Map<String, dynamic>> filters = [
-    {'icon': Icons.grid_view_outlined, 'label': 'Tout'},
+    {'icon': Icons.grid_view_outlined, 'label': 'Parcours'},
+    {'icon': Icons.play_circle_filled, 'label': 'Vidéo'},
     {'icon': Icons.keyboard_voice_outlined, 'label': 'Podcast'},
     {'icon': Icons.article, 'label': 'Articles'},
-    {'icon': Icons.headset_outlined, 'label': 'Audiobooks'},
   ];
 
   @override
@@ -63,8 +63,8 @@ Widget build(BuildContext context) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
-      color: isActive ? Color(0xFFFFF9E8) : Colors.transparent,
-      borderRadius: isActive ? BorderRadius.circular(25) : BorderRadius.circular(0),
+      color: isActive ? Color(0xFFFFC113) : Colors.transparent,
+      borderRadius: isActive ? BorderRadius.circular(8) : BorderRadius.circular(0),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/custom_tab_bar.dart';
-import 'screens/login_page.dart';  // crée cette page séparément comme avant
-
+import 'screens/login_page.dart';
+import 'screens/home_page.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -27,6 +27,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     bool loggedIn = prefs.getBool("isLoggedIn") ?? false;
+    await Future.delayed(const Duration(seconds: 2)); // petit délai Splash
     setState(() {
       _isLoggedIn = loggedIn;
       _loading = false;
@@ -37,10 +38,13 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const MaterialApp(
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+        debugShowCheckedModeBanner: false,
+        home: CustomTabBar(),
       );
     }
+
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'SIRA',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: _isLoggedIn ? const CustomTabBar() : const LoginPage(),

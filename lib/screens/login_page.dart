@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'register_page.dart';
+import '../widgets/custom_input.dart';
+import '../widgets/custom_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,9 +21,13 @@ class _LoginPageState extends State<LoginPage> {
     final savedEmail = prefs.getString("email");
     final savedPassword = prefs.getString("password");
 
-    if (emailController.text == savedEmail && passwordController.text == savedPassword) {
+    if (emailController.text == savedEmail &&
+        passwordController.text == savedPassword) {
       await prefs.setBool("isLoggedIn", true);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Email ou mot de passe incorrect")),
@@ -37,16 +43,33 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(controller: emailController, decoration: const InputDecoration(labelText: "Email")),
-            TextField(controller: passwordController, decoration: const InputDecoration(labelText: "Mot de passe"), obscureText: true),
+            CustomInput(
+              controller: emailController,
+              label: "Email",
+              placeholder: "",
+            ),
+            const SizedBox(height: 12),
+            CustomInput(
+              controller: passwordController,
+              label: "Mot de passe",
+              placeholder: "Entrez votre mot de passe",
+              obscureText: true,
+            ),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: login, child: const Text("Se connecter")),
-            TextButton(
+            CustomButton(
+              text: "Se connecter",
+              onPressed: login, // ✅ appel direct
+            ),
+            const SizedBox(height: 12),
+            CustomButton(
+              text: "S'inscrire",
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RegisterPage()),
+                );
               },
-              child: const Text("Créer un compte"),
-            )
+            ),
           ],
         ),
       ),

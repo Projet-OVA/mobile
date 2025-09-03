@@ -11,10 +11,16 @@ class CustomTabBar extends StatefulWidget {
 class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  final List<String> _labels = ['Profil', 'Accueil', 'Défis', 'Communauté'];
+  final List<IconData?> _icons = [null, Icons.window_rounded, Icons.flag, Icons.maps_ugc_sharp];
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 4, vsync: this, initialIndex: 1);
+    _tabController.addListener(() {
+      setState(() {}); // pour mettre à jour le border bottom
+    });
   }
 
   @override
@@ -29,27 +35,64 @@ class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderSt
       body: TabBarView(
         controller: _tabController,
         children: const [
+          Center(
+            child: CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage('assets/images/profile.png'),
+            ),
+          ),
           HomePage(),
-          Center(child: Text('Recherche')),
-          Center(child: Text('Statistiques')),
-          Center(child: Text('Profil')),
-          Center(child: Text('Messages')),
+          Center(child: Text('Défis')),
+          Center(child: Text('Communauté')),
         ],
       ),
-      bottomNavigationBar: Material(
-        // color: Theme.of(context).primaryColor,
-        child: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.home)),
-            Tab(icon: Icon(Icons.grid_view_outlined)),
-            Tab(icon: Icon(Icons.show_chart)),
-            Tab(icon: Icon(Icons.diversity_3_sharp )),
-            Tab(icon: Icon(Icons.sms_rounded )),
-          ],
-          labelColor: Color(0xFF000000),
-          unselectedLabelColor: Color(0xFF4D4D4D),
-          indicatorColor: Colors.transparent,
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(_labels.length, (index) {
+            final bool isActive = _tabController.index == index;
+            return GestureDetector(
+              onTap: () {
+                _tabController.animateTo(index);
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Icône ou photo profil
+                  if (index == 0)
+                    CircleAvatar(
+                      radius: 16,
+                      backgroundImage: AssetImage('assets/images/profile.png'),
+                    )
+                  else
+                    Icon(
+                      _icons[index],
+                      color: isActive ? Colors.black : Color(0xFF4D4D4D),
+                    ),
+                  const SizedBox(height: 4),
+                  // Nom de l'onglet
+                  Text(
+                    _labels[index],
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isActive ? Colors.black : Color(0xFF4D4D4D),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // Border bottom actif
+                  Container(
+                    height: 4,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: isActive ? Color(0xFFFFC113) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ),
       ),
     );
