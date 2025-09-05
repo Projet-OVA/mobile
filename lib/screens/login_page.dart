@@ -1,9 +1,9 @@
+import 'package:SIRA/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'home_page.dart';
+import 'bienvenu_page.dart';
 import 'register_page.dart';
 import '../widgets/custom_input.dart';
-import '../widgets/custom_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,6 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool rememberMe = false;
 
   Future<void> login() async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setBool("isLoggedIn", true);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomePage()),
+        MaterialPageRoute(builder: (_) => const BienvenuPage()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -38,40 +39,147 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Connexion")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Logo en haut
+            Align(
+              alignment: Alignment.topLeft,
+              child: Image.asset(
+                "assets/images/logoSira2.png", // ton logo soleil
+                height: 50,
+              ),
+            ),
+            const SizedBox(height: 40),
+
+            // Titre
+            const Text(
+              "Se connecter",
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Connectez vous directement avec",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Boutons sociaux
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _socialButton("assets/images/google.png"),
+                const SizedBox(width: 16),
+                _socialButton("assets/images/facebook.png"),
+                const SizedBox(width: 16),
+                _socialButton("assets/images/tiktok.png"),
+                const SizedBox(width: 16),
+                _socialButton("assets/images/instagram.png"),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            const Center(child: Text("Ou", style: TextStyle(color: Colors.grey))),
+
+            const SizedBox(height: 24),
+
+            // Champ Email
             CustomInput(
               controller: emailController,
               label: "Email",
-              placeholder: "",
+              placeholder: "Loisbecket@gmail.com",
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            // Champ Mot de passe
             CustomInput(
               controller: passwordController,
-              label: "Mot de passe",
-              placeholder: "Entrez votre mot de passe",
               obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            CustomButton(
-              text: "Se connecter",
-              onPressed: login, // ✅ appel direct
+              placeholder: "*******",
+              label: "Password",
             ),
             const SizedBox(height: 12),
+            // Options mot de passe oublié + se souvenir
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Checkbox(
+                      value: rememberMe,
+                      onChanged: (val) {
+                        setState(() {
+                          rememberMe = val ?? false;
+                        });
+                      },
+                    ),
+                    const Text("Se souvenir de moi"),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text(
+                    "Mot de passe oublié ?",
+                    style: TextStyle(color: Color(0xEEE6AE11)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Bouton se connecter
             CustomButton(
-              text: "S'inscrire",
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const RegisterPage()),
-                );
-              },
+              onPressed: login,
+              text: "Se connecter",
+            ),
+            const SizedBox(height: 20),
+            // Lien vers inscription
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Vous n’avez pas de compte ? "),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const RegisterPage()),
+                    );
+                  },
+                  child: const Text(
+                    "S’inscrire",
+                    style: TextStyle(
+                      color: Color(0xFFFFC113),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // widget bouton social
+  Widget _socialButton(String assetPath) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        border: Border.all(color: Color(0xEEEFF0F6)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: Image.asset(assetPath, height: 24),
       ),
     );
   }

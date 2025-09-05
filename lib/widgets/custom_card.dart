@@ -1,87 +1,101 @@
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
-  final Color backgroundColor;
-  final String title;
+  final String duration;
   final String imageUrl;
   final String description;
+  final Color backgroundColor;
 
   const CustomCard({
     super.key,
-    required this.backgroundColor,
-    required this.title,
+    required this.duration,
     required this.imageUrl,
     required this.description,
+    this.backgroundColor = const Color(0xFFFCF1E1),
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          height: 230,
           decoration: BoxDecoration(
             color: backgroundColor,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 14),
+              // Durée + Favori
               Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // Durée + icône à gauche
                     Container(
-                      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 60),
-                      padding: const EdgeInsets.only(left: 8, top: 4, bottom: 4, right: 9),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.play_arrow,
+                          const Icon(
+                            Icons.access_time, // icône pour la durée
+                            size: 8,
                             color: Colors.black,
-                            size: 20,
                           ),
-                          // const SizedBox(width: 2),
-                          Flexible(
-                            child: Text(
-                              title,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
+                          const SizedBox(width: 4),
+                          Text(
+                            duration,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 8,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      description,
-                      style: const TextStyle(
-                        color: Color(0xFF1C1C1C),
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                    // Bouton favoris à droite
+                    GestureDetector(
+                      onTap: () {
+                        // Logique future pour favoris
+                      },
+                      child: const Icon(
+                        Icons.bookmarks,
+                        size: 15,
+                        color: Color(0x33322F35), // semi-transparent
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 14),
-              Expanded(
+              const SizedBox(height: 1),
+              // Description
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                child: Text(
+                  description,
+                  style: const TextStyle(
+                    color: Color(0xFF1C1C1C),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const Spacer(), // pousse l'image vers le bas
+              // Image
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                ),
                 child: Image.asset(
                   imageUrl,
                   width: double.infinity,
-                  fit: BoxFit.fill,
+                  height: 100,
+                  fit: BoxFit.cover,
                 ),
               ),
             ],
@@ -89,6 +103,5 @@ class CustomCard extends StatelessWidget {
         ),
       ),
     );
-    // SizedBox(width: 1);
   }
 }

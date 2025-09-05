@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 
 // Modèle de données pour les cartes du carrousel
 class CarouselItem {
-  final Color backgroundColor;
-  final String title;
+  final String duration;
   final String imageUrl;
   final String description;
 
   CarouselItem({
-    required this.backgroundColor,
-    required this.title,
+    required this.duration,
     required this.imageUrl,
     required this.description,
   });
@@ -18,20 +16,17 @@ class CarouselItem {
 // Liste des données de ton carrousel
 List<CarouselItem> carouselItems = [
   CarouselItem(
-    backgroundColor: Color.fromARGB(252, 241, 225, 1),
-    title: 'Parcours citoyen',
+    duration: "11mn",
     description: 'C\’est quoi être citoyen aujourd\’hui ?',
     imageUrl: 'assets/images/couple.png',
   ),
   CarouselItem(
-    backgroundColor: Color.fromARGB(85, 121, 207, 01),
-    title: 'Parcours citoyen',
+    duration: "11mn",
     description: 'Comment organiser un petit défi citoyen avec tes amis ?',
     imageUrl: 'assets/images/trio.png',
   ),
   CarouselItem(
-     backgroundColor: Color.fromARGB(85, 121, 207, 01),
-    title: 'Parcours citoyen',
+    duration: "11mn",
     description: 'Comment organiser un petit défi citoyen avec tes amis ?',
     imageUrl: 'assets/images/trio.png',
   ),

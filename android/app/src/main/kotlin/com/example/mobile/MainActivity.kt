@@ -1,4 +1,4 @@
-package com.sira.groupe13
+package org.sira.ova
 
 import io.flutter.embedding.android.FlutterActivity
 

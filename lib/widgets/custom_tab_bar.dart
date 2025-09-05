@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/home_page.dart';
+import '../screens/profile_page.dart';
 
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar({super.key});
@@ -35,12 +36,7 @@ class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderSt
       body: TabBarView(
         controller: _tabController,
         children: const [
-          Center(
-            child: CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('assets/images/profile.png'),
-            ),
-          ),
+          ProfilePage(),
           HomePage(),
           Center(child: Text('Défis')),
           Center(child: Text('Communauté')),
