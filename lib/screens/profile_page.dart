@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/custom_button.dart';
-import 'login_page.dart';
+import 'intro_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
     // Navigue vers la page Login
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
+      MaterialPageRoute(builder: (context) => const IntroPage()),
     );
   }
 

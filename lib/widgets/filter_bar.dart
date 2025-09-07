@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class FilterBar extends StatefulWidget {
-  const FilterBar({super.key});
+  final ValueChanged<int> onFilterSelected; // callback vers la page
+
+  const FilterBar({super.key, required this.onFilterSelected});
 
   @override
   State<FilterBar> createState() => _FilterBarState();
@@ -32,6 +34,7 @@ class _FilterBarState extends State<FilterBar> {
                 setState(() {
                   selectedIndex = index;
                 });
+                widget.onFilterSelected(index);
               },
               child: FilterItem(
                 icon: item['icon'],
@@ -58,30 +61,22 @@ class FilterItem extends StatelessWidget {
     this.isActive = false,
   });
 
- @override
-Widget build(BuildContext context) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-    decoration: BoxDecoration(
-      color: isActive ? Color(0xFFFFC113) : Colors.transparent,
-      borderRadius: isActive ? BorderRadius.circular(8) : BorderRadius.circular(0),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 14,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-          ),
-        ),
-      ],
-    ),
-  );
-}
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: isActive ? const Color(0xFFFFC113) : Colors.transparent,
+        borderRadius: isActive ? BorderRadius.circular(8) : BorderRadius.circular(0),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14),
+          const SizedBox(width: 4),
+          Text(label, style: const TextStyle(fontSize: 14)),
+        ],
+      ),
+    );
+  }
 }

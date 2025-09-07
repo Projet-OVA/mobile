@@ -59,7 +59,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             const SizedBox(height: 40),
-
             // Titre
             const Text(
               "S'inscrire",
@@ -78,7 +77,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             const SizedBox(height: 20),
-
             // Boutons sociaux
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,7 +161,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ],
             ),
             const SizedBox(height: 20),
-            // Bouton se connecter
             CustomButton(
               onPressed: register,
               text: "S'inscrire",
@@ -178,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const RegisterPage()),
+                      MaterialPageRoute(builder: (_) => const LoginPage()),
                     );
                   },
                   child: const Text(
