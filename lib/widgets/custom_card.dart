@@ -34,6 +34,9 @@ class CustomCard extends StatelessWidget {
               //  ),
             // );
           },
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
           child: Container(
             decoration: BoxDecoration(
               color: backgroundColor,
@@ -49,9 +52,10 @@ class CustomCard extends StatelessWidget {
                     children: [
                       // Durée + icône à gauche
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Row(
                           children: [
@@ -77,8 +81,8 @@ class CustomCard extends StatelessWidget {
                           // Logique future pour favoris
                         },
                         child: const Icon(
-                          Icons.bookmarks,
-                          size: 10,
+                          Icons.bookmarks_outlined,
+                          size: 14,
                           color: Color(0x33322F35),
                         ),
                       ),
@@ -108,8 +112,8 @@ class CustomCard extends StatelessWidget {
                   child: Image.asset(
                     imageUrl,
                     width: double.infinity,
-                    height: 140,
-                    fit: BoxFit.cover,
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    fit: BoxFit.fill,
                   ),
                 ),
               ],

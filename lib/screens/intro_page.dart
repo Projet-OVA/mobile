@@ -1,88 +1,92 @@
 import 'package:flutter/material.dart';
 import 'presentation.dart';
 
-class IntroPage extends StatelessWidget {
+class IntroPage extends StatefulWidget {
   const IntroPage({super.key});
 
   @override
+  State<IntroPage> createState() => _IntroPageState();
+}
+
+class _IntroPageState extends State<IntroPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 5), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Presentation()),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFEF9E7), // couleur de fond beige
-      body: Stack(
+      backgroundColor: const Color(0xFFFEF9E7), // beige
+      body: Column(
         children: [
-          // Ellipse en bas
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: GestureDetector(
-              onTap: () {
-                // Navigation vers Presentation
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Presentation()),
-                );
-              },
-              child: Image.asset(
-                'assets/images/ellipse.png',
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 275, // ajuste selon la taille de ton ellipse
-              ),
-            ),
-          ),
-          // Texte centré
-        const Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.baseline, // <- important
-                textBaseline: TextBaseline.alphabetic,
+          // Texte centré (prend tout l’espace dispo sauf le bas)
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    "#",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: const [
+                      Text(
+                        "#",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        "1",
+                        style: TextStyle(
+                          fontSize: 90,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        " application",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "1",
+                  const SizedBox(height: 10),
+                  const Text(
+                    "d’éducation citoyenne\nau Sénégal",
                     style: TextStyle(
-                      fontSize: 90, // plus gros
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      fontSize: 16,
+                      color: Colors.black87,
                     ),
-                    textHeightBehavior: const TextHeightBehavior(
-                      applyHeightToFirstAscent: false, // réduit l’espace au-dessus et au-dessous
-                      applyHeightToLastDescent: false,
-                    ),
-                  ),
-                  Text(
-                    " application",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              Text(
-                "d’éducation citoyenne\nau Sénégal",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 100),
-            ],
+            ),
           ),
-        ),
-    ]
+
+          // Image collée en bas
+          Image.asset(
+            'assets/images/ellipse.png',
+            fit: BoxFit.fill,
+            width: double.infinity,
+            height: screenHeight * 0.30, // 25% de l’écran
+          ),
+        ],
       ),
     );
   }

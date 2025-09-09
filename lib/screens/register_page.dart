@@ -58,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 50,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 25),
             // Titre
             const Text(
               "S'inscrire",
@@ -76,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             // Boutons sociaux
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -105,7 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     // TODO: action Google login
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 22),
 
                 // Ligne avec les autres réseaux
                 Row(
@@ -120,11 +120,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 22),
 
             const Center(child: Text("Ou", style: TextStyle(color: Colors.grey))),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 22),
 
             // Champ Email
             CustomInput(
@@ -160,12 +160,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             CustomButton(
               onPressed: register,
               text: "S'inscrire",
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             // Lien vers inscription
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -13,7 +13,7 @@ class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderSt
   late TabController _tabController;
 
   final List<String> _labels = ['Profil', 'Accueil', 'Défis', 'Communauté'];
-  final List<IconData?> _icons = [null, Icons.window_rounded, Icons.flag, Icons.maps_ugc_sharp];
+  final List<IconData?> _icons = [null, Icons.window_rounded, Icons.flag_outlined, Icons.maps_ugc_sharp];
 
   @override
   void initState() {
@@ -32,6 +32,8 @@ class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: TabBarView(
         controller: _tabController,
@@ -42,53 +44,55 @@ class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderSt
           Center(child: Text('Communauté')),
         ],
       ),
-      bottomNavigationBar: Container(
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(_labels.length, (index) {
-            final bool isActive = _tabController.index == index;
-            return GestureDetector(
-              onTap: () {
-                _tabController.animateTo(index);
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Icône ou photo profil
-                  if (index == 0)
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundImage: AssetImage('assets/images/profile.png'),
-                    )
-                  else
-                    Icon(
-                      _icons[index],
-                      color: isActive ? Colors.black : Color(0xFF4D4D4D),
-                    ),
-                  const SizedBox(height: 4),
-                  // Nom de l'onglet
-                  Text(
-                    _labels[index],
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isActive ? Colors.black : Color(0xFF4D4D4D),
-                    ),
+      bottomNavigationBar: SafeArea( // ✅ ajoute SafeArea pour éviter les zones système
+        child: Container(
+          color: Colors.white,
+          child: Row(
+            children: List.generate(_labels.length, (index) {
+              final bool isActive = _tabController.index == index;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    _tabController.animateTo(index);
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 6),
+                      if (index == 0)
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundImage: AssetImage('assets/images/profile.png'),
+                        )
+                      else
+                        Icon(
+                          _icons[index],
+                          color: isActive ? Colors.black : const Color(0xFF4D4D4D),
+                        ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _labels[index],
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isActive ? Colors.black : const Color(0xFF4D4D4D),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        height: 4,
+                        width: MediaQuery.of(context).size.width / _labels.length * 0.6,
+                        decoration: BoxDecoration(
+                          color: isActive ? const Color(0xFFFFC113) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  // Border bottom actif
-                  Container(
-                    height: 4,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: isActive ? Color(0xFFFFC113) : Colors.transparent,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );

@@ -22,12 +22,12 @@ List<CarouselItem> carouselItems = [
   ),
   CarouselItem(
     duration: "11mn",
-    description: 'Comment organiser un petit défi citoyen avec tes amis ?',
+    description: 'C\’est quoi être citoyen aujourd\’hui ?',
     imageUrl: 'assets/images/trio.png',
   ),
   CarouselItem(
     duration: "11mn",
-    description: 'Comment organiser un petit défi citoyen avec tes amis ?',
+    description: 'C\’est quoi être citoyen aujourd\’hui ?',
     imageUrl: 'assets/images/trio.png',
   ),
 ];

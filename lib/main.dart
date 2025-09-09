@@ -17,7 +17,8 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SIRA',
-      home: CustomTabBar(),
+      home: IntroPage(),
+      //home: CustomTabBar(),
     );
   }
 }

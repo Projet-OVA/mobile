@@ -49,11 +49,11 @@ class _LoginPageState extends State<LoginPage> {
             Align(
               alignment: Alignment.topLeft,
               child: Image.asset(
-                "assets/images/logoSira2.png", // ton logo soleil
+                "assets/images/logoSira2.png",
                 height: 50,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 25),
 
             // Titre
             const Text(
@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
 
             // Boutons sociaux
             Row(
@@ -87,11 +87,11 @@ class _LoginPageState extends State<LoginPage> {
                 _socialButton("assets/images/instagram.png"),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 22),
 
             const Center(child: Text("Ou", style: TextStyle(color: Colors.grey))),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 22),
 
             // Champ Email
             CustomInput(
@@ -134,13 +134,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             // Bouton se connecter
             CustomButton(
               onPressed: login,
               text: "Se connecter",
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             // Lien vers inscription
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -14,21 +14,20 @@ class _FilterBarState extends State<FilterBar> {
 
   final List<Map<String, dynamic>> filters = [
     {'icon': Icons.grid_view_outlined, 'label': 'Parcours'},
-    {'icon': Icons.play_circle_filled, 'label': 'Vidéo'},
+    {'icon': Icons.play_circle_outline_outlined, 'label': 'Vidéo'},
     {'icon': Icons.keyboard_voice_outlined, 'label': 'Podcast'},
-    {'icon': Icons.article, 'label': 'Articles'},
+    {'icon': Icons.article_outlined, 'label': 'Articles'},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 18, bottom: 15),
+      padding: const EdgeInsets.only(bottom: 15),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(filters.length, (index) {
           final item = filters[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 2),
+          return Expanded( // chaque item prend la même largeur
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -64,17 +63,25 @@ class FilterItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         color: isActive ? const Color(0xFFFFC113) : Colors.transparent,
-        borderRadius: isActive ? BorderRadius.circular(8) : BorderRadius.circular(0),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center, // centre icône + texte
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14),
-          const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 14)),
+          Icon(icon, size: 16),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 13),
+              overflow: TextOverflow.ellipsis, // évite débordement
+            ),
+          ),
         ],
       ),
     );

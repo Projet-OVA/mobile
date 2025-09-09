@@ -27,7 +27,7 @@ class ActionDart extends StatelessWidget {
           ),
 
           IconButton(
-            icon: Icon(Icons.bookmarks),
+            icon: Icon(Icons.bookmarks_outlined),
             onPressed: () {
             },
           ),
@@ -35,7 +35,7 @@ class ActionDart extends StatelessWidget {
           const SizedBox(width: 12),
 
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: Icon(Icons.notifications_outlined),
             onPressed: () {
             },
           ),
