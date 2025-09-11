@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'video_card.dart'; // Assurez-vous que c'est le bon fichier
 
 void main() {
   runApp(const Video());
@@ -22,14 +23,36 @@ class CenteredTextPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(
-          'Vidéo',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: const [
+          VideoCard(
+            thumbnailUrl: 'assets/images/enfants.png',
+            title: 'Rôle de l\'Éducation Populaire et la Citoyenneté',
+            subtitle: 'Saliou Diop',
+            profession: 'Educateur Citoyen',
+            avatarUrl: 'assets/images/cardProfile.png',
+            //videoUrl: 'assets/images/profiledetail.png',
           ),
-        ),
+          SizedBox(height: 16),
+          VideoCard(
+            thumbnailUrl: 'assets/images/card.png',
+            title: 'Rôle de l\'Éducation Populaire et la Citoyenneté',
+            subtitle: 'Saliou Diop',
+            profession: 'Educateur Citoyen',
+            avatarUrl: 'assets/images/cardProfile.png',
+            //videoUrl: 'assets/images/profiledetail.png',
+          ),
+          SizedBox(height: 16),
+          VideoCard(
+            thumbnailUrl: 'assets/images/enfants.png',
+            title: 'Rôle de l\'Éducation Populaire et la Citoyenneté',
+            subtitle: 'Saliou Diop',
+            profession: 'Educateur Citoyen',
+            avatarUrl: 'assets/images/cardProfile.png',
+            //videoUrl: 'assets/images/profiledetail.png',
+          ),
+        ],
       ),
     );
   }

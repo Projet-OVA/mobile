@@ -12,7 +12,7 @@ class CustomTabBar extends StatefulWidget {
 class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<String> _labels = ['Profil', 'Accueil', 'Défis', 'Communauté'];
+  final List<String> _labels = ['Profil', 'Parcours', 'Défis', 'Communauté'];
   final List<IconData?> _icons = [null, Icons.window_rounded, Icons.flag_outlined, Icons.maps_ugc_sharp];
 
   @override

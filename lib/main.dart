@@ -4,6 +4,7 @@ import 'screens/intro_page.dart';
 import 'screens/presentation.dart';
 import 'screens/objectif.dart';
 import 'screens/engagement.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,9 +15,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        textTheme: GoogleFonts.outfitTextTheme(),
+      ),
       title: 'SIRA',
+      //primarySwatch: Colors.orange,
       home: IntroPage(),
       //home: CustomTabBar(),
     );

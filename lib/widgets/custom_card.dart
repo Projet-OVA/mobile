@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/tabs/detail_parcours.dart';
 
 class CustomCard extends StatelessWidget {
   final String duration;
@@ -23,16 +24,12 @@ class CustomCard extends StatelessWidget {
         child: InkWell(
           onTap: () {
             // Navigation vers une page de détails
-            // Navigator.push(
-              //  context
-              // MaterialPageRoute(
-              // builder: (context) => DetailPage(
-              //  title: description,
-              // imageUrl: imageUrl,
-              //  duration: duration,
-              //  ),
-              //  ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DetailParcours(),
+              ),
+            );
           },
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
@@ -83,7 +80,7 @@ class CustomCard extends StatelessWidget {
                         child: const Icon(
                           Icons.bookmarks_outlined,
                           size: 14,
-                          color: Color(0x33322F35),
+                          color: Color(0xFF322F35),
                         ),
                       ),
                     ],

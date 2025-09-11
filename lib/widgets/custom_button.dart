@@ -18,16 +18,27 @@ class CustomButton extends StatelessWidget {
         width: double.infinity,
         child: ElevatedButton(
           onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFFC113),
-            foregroundColor: Colors.black,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                if (states.contains(MaterialState.disabled)) {
+                  return const Color(0xFFFFD971); // couleur bouton inactif
+                }
+                return const Color(0xFFFFC113); // couleur bouton actif
+              },
+            ),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+            padding: MaterialStateProperty.all<EdgeInsets>(
+              const EdgeInsets.symmetric(vertical: 16),
+            ),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           child: Text(
-            text ?? '', // texte vide si null
+            text ?? '',
             style: const TextStyle(fontSize: 16),
           ),
         ),
