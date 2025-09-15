@@ -39,7 +39,7 @@ class _DetailPodcastState extends State<DetailPodcast> {
                 fit: BoxFit.fill,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 14),
             // Titre et auteur
             Text(
               'Portraits de jeunes qui changent leur quartier',
@@ -50,12 +50,15 @@ class _DetailPodcastState extends State<DetailPodcast> {
                 color: Color(0xFF242327), // couleur ici
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Saliou Diop',
-              style: TextStyle(fontSize: 12, color: Color(0xFF979797)),
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft, // aligne le texte à gauche
+              child: Text(
+                'Saliou Diop',
+                style: TextStyle(fontSize: 12, color: Color(0xFF979797)),
+              ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 18),
             // Barre de progression
             Slider(
               value: progress,
@@ -79,7 +82,7 @@ class _DetailPodcastState extends State<DetailPodcast> {
                   style: TextStyle(fontSize: 12, color: Color(0xFF979797)),),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 18),
             // Boutons de contrôle
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

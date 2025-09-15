@@ -22,8 +22,8 @@ class MyApp extends StatelessWidget {
       ),
       title: 'SIRA',
       //primarySwatch: Colors.orange,
-      //home: IntroPage(),
-      home: CustomTabBar(),
+      home: IntroPage(),
+      //home: CustomTabBar(),
     );
   }
 }
