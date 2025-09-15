@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../widgets/my_carousel.dart';
 import 'main_layout.dart';
-import 'parcours.dart';
-import 'video.dart';
-import 'podcast.dart';
-import 'article.dart';
+import '../../screens/tabs/parcours.dart';
+import '../../screens/tabs/video.dart';
+import '../../screens/tabs/podcast.dart';
+import '../../screens/tabs/article.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});

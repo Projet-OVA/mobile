@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/tabs/detail_parcours.dart';
+import '../screens/tabs/detail_parcours.dart';
 
 class CustomCard extends StatelessWidget {
   final String duration;

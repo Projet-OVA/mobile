@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../screens/tabs/detail_video.dart';
 
 class VideoCard extends StatelessWidget {
   final String thumbnailUrl;
@@ -28,6 +29,19 @@ class VideoCard extends StatelessWidget {
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(12),
       ),
+        child: InkWell(
+          onTap: () {
+            // Navigation vers une page de détails
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DetailVideo(),
+              ),
+            );
+          },
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
       child: Column(
         children: [
           // En-tête : profil + nom + profession + favoris
@@ -124,6 +138,6 @@ class VideoCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+        ),);
   }
 }

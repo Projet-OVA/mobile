@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/tabs/parcours.dart';
+import 'tabs/parcours.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

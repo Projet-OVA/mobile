@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'video_card.dart'; // Assurez-vous que c'est le bon fichier
+import '../../widgets/tabs/video_card.dart'; // Assurez-vous que c'est le bon fichier
 
 void main() {
   runApp(const Video());

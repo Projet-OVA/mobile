@@ -1,7 +1,7 @@
 import 'package:SIRA/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'card_video.dart';
-import 'quiz/question.dart';
+import '../../widgets/tabs/card_video.dart';
+import '../../widgets/tabs/quiz/question.dart';
 
 class DetailParcours extends StatelessWidget {
   const DetailParcours({super.key});
@@ -11,12 +11,11 @@ class DetailParcours extends StatelessWidget {
     final size = MediaQuery
         .of(context)
         .size;
-
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ Partie image en haut
+            // Partie image en haut
             Stack(
               children: [
                 Container(

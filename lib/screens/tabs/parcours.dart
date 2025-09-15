@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/my_carousel.dart';
-import 'main_layout.dart';
+import '../../widgets/tabs/main_layout.dart';
 import 'video.dart';
 import 'podcast.dart';
 import 'article.dart';
