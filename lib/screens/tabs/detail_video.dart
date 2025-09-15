@@ -25,7 +25,7 @@ class DetailVideo extends StatelessWidget {
               avatarUrl: "assets/images/profile.png",
             ),
             CardDetailVideo(
-              videoUrl: 'assets/videos/video3.mp4',
+              videoUrl: 'assets/videos/video1.mp4',
               title: "Rôle de l'Éducation Populaire et la Citoyenneté",
               author: "Samba Ngom",
               profession: "Éducateur Citoyen",
