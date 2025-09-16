@@ -18,7 +18,7 @@ class DetailVideo extends StatelessWidget {
               avatarUrl: "assets/images/profile.png",
             ),
             CardDetailVideo(
-              videoUrl: 'assets/videos/video2.mp4',
+              videoUrl: 'assets/videos/video1.mp4',
               title: "Rôle de l'Éducation Populaire et la Citoyenneté",
               author: "Khady Lô",
               profession: "Éducateur Citoyen",
