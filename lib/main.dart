@@ -1,29 +1,33 @@
+import 'package:SIRA/screens/login_page.dart';
 import 'package:flutter/material.dart';
-import 'widgets/custom_tab_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/intro_page.dart';
 import 'screens/presentation.dart';
 import 'screens/objectif.dart';
 import 'screens/engagement.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // obligatoire pour SharedPreferences avant runApp
+  final prefs = await SharedPreferences.getInstance();
+  final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+
+  runApp(MyApp(initialRoute: isLoggedIn ? "login" : "intro"));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'SIRA',
       theme: ThemeData(
         textTheme: GoogleFonts.outfitTextTheme(),
       ),
-      title: 'SIRA',
-      //primarySwatch: Colors.orange,
-      home: IntroPage(),
-      //home: CustomTabBar(),
+      home: initialRoute == "login" ? const LoginPage() : const IntroSequence(),
     );
   }
 }
@@ -40,7 +44,7 @@ class _IntroSequenceState extends State<IntroSequence> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages = [
     IntroPage(),
     Presentation(),
     ObjectifPage(),

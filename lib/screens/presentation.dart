@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_button.dart';
+import '../services/register_storage.dart'; // ✅ ajouter ton storage
 import 'objectif.dart';
 
 class Presentation extends StatelessWidget {
-  const Presentation({super.key});
+  Presentation({super.key});
+
+  // ✅ Déclaration du controller
+  final TextEditingController usernameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,7 @@ class Presentation extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ObjectifPage()),
+                      MaterialPageRoute(builder: (context) => const ObjectifPage()),
                     );
                   },
                   child: const Text(
@@ -57,15 +61,23 @@ class Presentation extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-              // Input
-              CustomInput(),
+              // ✅ Input avec controller
+              CustomInput(controller: usernameController),
+
               const Spacer(),
 
               // Bouton Suivant
               CustomButton(
                 text: 'Suivant',
-                onPressed: () {
-                  // action pour aller à la page suivante
+                onPressed: () async { // ✅ async ajouté
+                  final username = usernameController.text.trim();
+                  if (username.isNotEmpty) {
+                    await RegisterStorage.setUsername(username); // ✅ sauvegarde
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ObjectifPage()),
+                    );
+                  }
                 },
               ),
               const SizedBox(height: 20),

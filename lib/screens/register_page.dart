@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:SIRA/widgets/custom_button.dart';
 import 'login_page.dart';
 import '../widgets/custom_input.dart';
+import '../services/api_service.dart';
+import '../services/register_storage.dart';
 
 
 class RegisterPage extends StatefulWidget {
@@ -13,31 +14,70 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+
+  final TextEditingController nomController = TextEditingController();
+  final TextEditingController prenomController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+  final String role = "CITIZEN";
   bool rememberMe = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    // Récupère le username stocké
+    final storedUsername = await RegisterStorage.getUsername();
+    if (storedUsername != null && storedUsername.isNotEmpty) {
+      usernameController.text = storedUsername;
+    }
+  }
+
   Future<void> register() async {
-    final prefs = await SharedPreferences.getInstance();
-    // Sauvegarder toutes les données
-    await prefs.setString('email', emailController.text);
-    await prefs.setString('password', passwordController.text);
+    try {
+      final response = await ApiService.register(
+        nom: nomController.text.trim(),
+        prenom: prenomController.text.trim(),
+        username: usernameController.text.trim(),
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        phoneNumber: phoneNumberController.text.trim(),
+        role: role,
+      );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Compte créé avec succès")),
-    );
-
-    // Rediriger vers la page de connexion
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginPage()),
-    );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Compte créé avec succès ✅")),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erreur: ${response.body}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur de connexion: $e")),
+      );
+    }
   }
 
   @override
   void dispose() {
+    nomController.dispose();
+    prenomController.dispose();
+    usernameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    phoneNumberController.dispose();
     super.dispose();
   }
 
@@ -126,6 +166,27 @@ class _RegisterPageState extends State<RegisterPage> {
 
             const SizedBox(height: 22),
 
+            // Champ nom
+            CustomInput(
+              controller: nomController,
+              label: "Nom",
+              placeholder: "Lois",
+            ),
+            const SizedBox(height: 12),
+            // Champ prenom
+            CustomInput(
+              controller: prenomController,
+              label: "Prénom",
+              placeholder: "Becket",
+            ),
+            const SizedBox(height: 12),
+            //champ username
+            CustomInput(
+              controller: usernameController,
+              label: "Surnom",
+              placeholder: "Dev",
+            ),
+            const SizedBox(height: 12),
             // Champ Email
             CustomInput(
               controller: emailController,
@@ -141,6 +202,12 @@ class _RegisterPageState extends State<RegisterPage> {
               label: "Password",
             ),
             const SizedBox(height: 12),
+            // Champ phone
+            CustomInput(
+              controller: phoneNumberController,
+              label: "Téléphone",
+              placeholder: "77*******",
+            ),
             // Options mot de passe oublié + se souvenir
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

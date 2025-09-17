@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'bienvenu_page.dart';
 import 'register_page.dart';
 import '../widgets/custom_input.dart';
+import '../services/api_service.dart';
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,23 +20,39 @@ class _LoginPageState extends State<LoginPage> {
   bool rememberMe = false;
 
   Future<void> login() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedEmail = prefs.getString("email");
-    final savedPassword = prefs.getString("password");
-
-    if (emailController.text == savedEmail &&
-        passwordController.text == savedPassword) {
-      await prefs.setBool("isLoggedIn", true);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const BienvenuPage()),
+    try {
+      final response = await ApiService.login(
+        email: emailController.text.trim(),
+        password: passwordController.text,
       );
-    } else {
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        final data = jsonDecode(response.body);
+        print("Login response: $data");
+
+        // Si ton API retourne un token JWT ou info utilisateur
+        final prefs = await SharedPreferences.getInstance();
+        final token = decoded["data"]["accessToken"];
+        await prefs.setBool("isLoggedIn", true);
+        await prefs.setString("accessToken", token); // si JWT
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const BienvenuPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erreur: ${response.body}")),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email ou mot de passe incorrect")),
+        SnackBar(content: Text("Erreur de connexion: $e")),
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
