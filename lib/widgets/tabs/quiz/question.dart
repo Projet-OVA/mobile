@@ -340,7 +340,12 @@ class _QuestionState extends State<Question> with SingleTickerProviderStateMixin
                       SafeArea(
                         child: CustomButton(
                           text: "Suivant",
-                          onPressed: selectedAnswer != null ? submitAnswer : null,
+                          onPressed: () async {
+                            // Exemple : action asynchrone
+                            await Future.delayed(const Duration(seconds: 2));
+                            // Navigation ou autre action après chargement
+                            print("Action terminée");
+                          },
                         ),
                       ),
                     ],

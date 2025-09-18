@@ -107,9 +107,16 @@ class _ObjectifPageState extends State<ObjectifPage> {
             }),
             const Spacer(),
             // Ton bouton déjà existant
-            CustomButton(text: 'Suivant', onPressed: () {
-              // action pour aller à la page suivante
-            },)
+            CustomButton(
+              text: "Suivant",
+              onPressed: () async {
+                // Exemple : action asynchrone
+                await Future.delayed(const Duration(seconds: 2));
+                // Navigation ou autre action après chargement
+                print("Action terminée");
+              },
+            ),
+
           ],
         ),
       ),

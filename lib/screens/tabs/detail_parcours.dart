@@ -163,7 +163,7 @@ class DetailParcours extends StatelessWidget {
                         width: double.infinity,
                         child: CustomButton(
                           text: "Passez le Quizz",
-                          onPressed: () {
+                          onPressed: () async  {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Question()),

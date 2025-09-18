@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/tabs/my_carousel.dart';
+import '../../widgets/tabs/my_carousel_podcast.dart';
 
 class Podcast extends StatelessWidget {
   const Podcast({super.key});
@@ -19,7 +19,7 @@ class Podcast extends StatelessWidget {
             ),
           ),
           SizedBox(height: 19),
-          MyCarousel(),
+          MyCarouselPodcast(),
           SizedBox(height: 16),
 
           // section 2
@@ -31,7 +31,7 @@ class Podcast extends StatelessWidget {
             ),
           ),
           SizedBox(height: 19),
-          MyCarousel(),
+          MyCarouselPodcast(),
           SizedBox(height: 16),
 
           // section 3
@@ -43,7 +43,7 @@ class Podcast extends StatelessWidget {
             ),
           ),
           SizedBox(height: 19),
-          MyCarousel(),
+          MyCarouselPodcast(),
           SizedBox(height: 16),
 
           // section 4
@@ -55,7 +55,7 @@ class Podcast extends StatelessWidget {
             ),
           ),
           SizedBox(height: 19),
-          MyCarousel(),
+          MyCarouselPodcast(),
           SizedBox(height: 16),
         ],
       ),

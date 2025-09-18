@@ -1,8 +1,10 @@
-import 'package:SIRA/screens/login_page.dart';
+import 'package:SIRA/widgets/card_statistique.dart';
+import 'package:SIRA/widgets/tabs/main_layout_profile.dart';
+import 'package:SIRA/widgets/tabs/my_carousel_podcast.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../widgets/custom_button.dart';
-import '../services/api_service.dart';
+import '../widgets/my_carousel.dart';
+import '../screens/tabs/recompense.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,46 +14,122 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Future<void> logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('accessToken') ?? "";
-
-    try {
-      final response = await ApiService.logout(token);
-
-      if (response.statusCode == 200) {
-        // Suppression locale des données
-        await prefs.clear();
-
-        // Redirection vers login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erreur lors de la déconnexion")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur: $e")),
-      );
-    }
-  }
-
+  int selectedFilter = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profil"),
-        centerTitle: true,
+    return MainLayoutProfile(
+      onFilterSelected: (index) {
+        setState(() {
+          selectedFilter = index;
+        });
+      },
+      child: _buildContent(),
+    );
+  }
+
+  Widget _buildContent() {
+    switch (selectedFilter) {
+      case 0:
+        return _buildProgression();
+      case 1:
+        return _buildRecompense();
+      default:
+        return const Center(child: Text("Aucun contenu"));
+    }
+  }
+
+  Widget _buildProgression() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 20), // pour éviter que ça colle en bas
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          SizedBox(height: 16),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: CardStatistique(
+                    number: "12",
+                    label: "Quizz Réussis",
+                    imagePath: "assets/images/quizze.png",
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: CardStatistique(
+                    number: "09",
+                    label: "Parcours",
+                    imagePath: "assets/images/evolution.png",
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 15),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: CardStatistique(
+                    number: "05",
+                    label: "Défis Créés",
+                    imagePath: "assets/images/check.png",
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: CardStatistique(
+                    number: "18",
+                    label: "Défis Relevés",
+                    imagePath: "assets/images/quizze.png",
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Title(title: "Historique Parcours "),
+                MyCarousel(),
+                SizedBox(height: 16),
+                Title(title: "Historique Quizz"),
+                MyCarousel(),
+                SizedBox(height: 16),
+                Title(title: "Historique Podcast"),
+                MyCarouselPodcast(),
+              ],
+            ),
+          ),
+        ],
       ),
-      body: Center(
-        child: CustomButton(
-          text: "Se déconnecter",
-          onPressed: () => logout(context),
+    );
+  }
+
+  Widget _buildRecompense() => const Recompense();
+}
+class Title extends StatelessWidget {
+  final String title;
+
+  const Title({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w500,
+              fontSize: 14, color: Color(0xFF88868A)),
         ),
       ),
     );

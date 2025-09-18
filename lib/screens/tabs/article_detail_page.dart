@@ -14,12 +14,14 @@ class ArticleDetailPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: CustomButton(
           text: "Terminé",
-          onPressed: () {
+          onPressed: () async {
+            // Exemple : action asynchrone
+            await Future.delayed(const Duration(seconds: 2));
             Navigator.pop(context);
+            print("Action terminée");
           },
         ),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
