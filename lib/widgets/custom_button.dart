@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatefulWidget {
   final String? text;
   final Future<void> Function()? onPressed;
+  final double borderRadius;
 
   const CustomButton({
     super.key,
     this.text,
     this.onPressed,
+    this.borderRadius = 12,
   });
 
   @override
@@ -51,7 +53,7 @@ class _CustomButtonState extends State<CustomButton> {
             ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(widget.borderRadius),
               ),
             ),
           ),

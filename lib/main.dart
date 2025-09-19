@@ -1,23 +1,21 @@
 import 'package:SIRA/screens/login_page.dart';
+import 'package:SIRA/widgets/custom_tab_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+// Tes imports pour les pages
 import 'screens/intro_page.dart';
 import 'screens/presentation.dart';
 import 'screens/objectif.dart';
 import 'screens/engagement.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // obligatoire pour SharedPreferences avant runApp
-  final prefs = await SharedPreferences.getInstance();
-  final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
-
-  runApp(MyApp(initialRoute: isLoggedIn ? "login" : "intro"));
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final String initialRoute;
-  const MyApp({super.key, required this.initialRoute});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +25,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         textTheme: GoogleFonts.outfitTextTheme(),
       ),
-      home: initialRoute == "login" ? const LoginPage() : const IntroSequence(),
+      home: const CustomTabBar(), // toujours démarrer par l’intro
     );
   }
 }
 
-/// Widget pour afficher toutes les pages d’intro avant login
+/// Widget pour afficher toutes les pages d’intro sans restriction
 class IntroSequence extends StatefulWidget {
   const IntroSequence({super.key});
 
@@ -45,10 +43,12 @@ class _IntroSequenceState extends State<IntroSequence> {
   int _currentPage = 0;
 
   final List<Widget> _pages = [
-    IntroPage(),
-    Presentation(),
-    ObjectifPage(),
-    EngagementPage(),
+    const IntroPage(),
+     Presentation(),
+    const ObjectifPage(),
+    const EngagementPage(),
+    // 👉 tu peux même rajouter LoginPage si tu veux qu’elle fasse partie du flow
+    // const LoginPage(),
   ];
 
   @override
@@ -56,7 +56,7 @@ class _IntroSequenceState extends State<IntroSequence> {
     return Scaffold(
       body: PageView(
         controller: _controller,
-        physics: const NeverScrollableScrollPhysics(),
+        physics: const BouncingScrollPhysics(), // permet de scroller librement
         onPageChanged: (index) {
           setState(() => _currentPage = index);
         },

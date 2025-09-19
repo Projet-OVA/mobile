@@ -1,3 +1,4 @@
+import 'package:SIRA/screens/defi_page.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_page.dart';
 import '../screens/profile_page.dart';
@@ -40,7 +41,7 @@ class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderSt
         children: const [
           ProfilePage(),
           HomePage(),
-          Center(child: Text('Défis')),
+          DefiPage(),
           Center(child: Text('Communauté')),
         ],
       ),
