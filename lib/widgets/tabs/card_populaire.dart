@@ -1,3 +1,4 @@
+import 'package:SIRA/screens/tabs/detail_populaire_page.dart';
 import 'package:flutter/material.dart';
 
 class CardPopulaire extends StatelessWidget {
@@ -22,7 +23,17 @@ class CardPopulaire extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+        onTap: () {
+          //Navigation vers la page détail
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DetailPopulairePage(),
+            ),
+          );
+        },
+      child: Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -231,6 +242,7 @@ class CardPopulaire extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }
