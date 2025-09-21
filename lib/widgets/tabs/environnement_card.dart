@@ -1,3 +1,4 @@
+import 'package:SIRA/screens/tabs/detail_populaire_page.dart';
 import 'package:flutter/material.dart';
 
 class EnvironnementCard extends StatelessWidget {
@@ -87,16 +88,25 @@ class EnvironnementCard extends StatelessWidget {
               color: Color(0xFFFFF9E7),
               borderRadius: BorderRadius.circular(2),
             ),
-            child: IconButton(
-              onPressed: onBack ?? () {},
-              icon: const Icon(
-                Icons.keyboard_arrow_right,
-                color: Color(0xFFFFC113),
-                size: 28,
+              child: IconButton(
+                onPressed: onBack ?? () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DetailPopulairePage(),
+                    ),
+                  );
+                },
+                style: ButtonStyle(
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                icon: const Icon(
+                  Icons.keyboard_arrow_right,
+                  color: Color(0xFFFFC113),
+                  size: 28,
+                ),
               ),
             ),
-          ),
-
         ],
       ),
     );

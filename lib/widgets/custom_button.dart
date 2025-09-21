@@ -4,12 +4,16 @@ class CustomButton extends StatefulWidget {
   final String? text;
   final Future<void> Function()? onPressed;
   final double borderRadius;
+  final IconData? icon;
+  final double? width;
 
   const CustomButton({
     super.key,
     this.text,
     this.onPressed,
     this.borderRadius = 12,
+    this.icon,
+    this.width,
   });
 
   @override
@@ -35,7 +39,7 @@ class _CustomButtonState extends State<CustomButton> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SizedBox(
-        width: double.infinity,
+        width: widget.width ?? double.infinity,
         child: ElevatedButton(
           onPressed: _handlePress,
           style: ButtonStyle(
@@ -66,9 +70,19 @@ class _CustomButtonState extends State<CustomButton> {
               strokeWidth: 2,
             ),
           )
-              : Text(
-            widget.text ?? '',
-            style: const TextStyle(fontSize: 16),
+              : Row(
+            mainAxisSize: MainAxisSize.min, // 👈 prend juste la place nécessaire
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (widget.icon != null) ...[
+                Icon(widget.icon, size: 30, color: Color(0xFF322F35)),
+                const SizedBox(width: 7),
+              ],
+              Text(
+                widget.text ?? '',
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
           ),
         ),
       ),

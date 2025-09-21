@@ -25,6 +25,7 @@ class CardProfiles extends StatelessWidget {
           height: imageSize,
           child: Stack(
             children: [
+              // Affichage des avatars
               for (int i = 0; i < profileImages.length; i++)
                 Positioned(
                   left: i * overlapOffset,
@@ -43,13 +44,34 @@ class CardProfiles extends StatelessWidget {
                     ),
                   ),
                 ),
+
+              // Cercle jaune avec le +
+              Positioned(
+                left: profileImages.length * overlapOffset, // 👈 juste après le dernier
+                child: Container(
+                  width: imageSize,
+                  height: imageSize,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFC113), // fond jaune
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.add,
+                      color: Color(0xFF232125), // couleur du +
+                      size: 14,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 5),
         // Texte avec le nombre de participants
         Text(
-          '+$totalParticipants Participants',
+          '$totalParticipants Participants',
           style: const TextStyle(
             fontSize: 12,
             color: Color(0xFF555257),

@@ -84,8 +84,7 @@ class DetailPopulairePage extends StatelessWidget {
                         'assets/images/profile3.png',
                         'assets/images/profile2.png',
                         'assets/images/profile1.png',
-                        'assets/images/profile4.png',
-                        'assets/images/profile3.png',
+                        'assets/images/profile4.png'
                       ],
                       totalParticipants: 900,
                     ),
@@ -165,6 +164,7 @@ class DetailPopulairePage extends StatelessWidget {
                       height: 1,
                       color: Color(0xFFF5F5F5),
                     ),
+                    const SizedBox(height: 24),
                     // Organisateur
                     Row(
                       children: [
@@ -196,17 +196,7 @@ class DetailPopulairePage extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF7F8F7), // 👈 couleur du background
-                            borderRadius: BorderRadius.circular(30), // arrondi facultatif
-                          ),
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.phone, color: Color(0xFF322F35)),
-                        ),),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Color(0xFFF7F8F7), // 👈 couleur du background
                             borderRadius: BorderRadius.circular(30), // arrondi facultatif
@@ -215,6 +205,17 @@ class DetailPopulairePage extends StatelessWidget {
                           onPressed: () {},
                           icon: const Icon(Icons.messenger_sharp, color: Color(0xFF322F35)),
                         ),),
+                        const SizedBox(width: 14),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF7F8F7), // 👈 couleur du background
+                            borderRadius: BorderRadius.circular(30), // arrondi facultatif
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.phone, color: Color(0xFF322F35)),
+                          ),),
                       ],
                     ),
 
@@ -235,14 +236,37 @@ class DetailPopulairePage extends StatelessWidget {
                     const SizedBox(height: 24),
 
                     // Bouton
-                    CustomButton(
-                      text: "Participer",
-                      onPressed: ()async {
-                        // Exemple : action asynchrone
-                        await Future.delayed(const Duration(seconds: 2));
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Icône favoris à gauche
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFFF9E7),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              // action favoris
+                            },
+                            icon: const Icon(Icons.bookmark_border_outlined, color: Color(0xFF322F35)),
+                          ),
+                        ),
+                        // Bouton "Participer" à droite
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: CustomButton(
+                              text: "Participer",
+                              onPressed: () async {
+                                // Action asynchrone
+                                await Future.delayed(const Duration(seconds: 2));
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-
                     // Espace supplémentaire pour le scroll
                     const SizedBox(height: 20),
                   ],

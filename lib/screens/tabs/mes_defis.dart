@@ -1,7 +1,7 @@
+import 'package:SIRA/screens/tabs/mes_defis_crees.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/tabs/filter_bar_mesdefis.dart';
 import '../../widgets/tabs/environnement_card.dart';
-import '../../screens/tabs/recompense.dart';
 
 class MesDefis extends StatefulWidget {
   const MesDefis({super.key});
@@ -105,5 +105,5 @@ class _MesDefisState extends State<MesDefis> {
     );
   }
 
-  Widget _buildDefiCree() => const Recompense();
+  Widget _buildDefiCree() => const MesDefisCrees();
 }
