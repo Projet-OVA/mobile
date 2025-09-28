@@ -60,7 +60,44 @@ class CardPopulaire extends StatelessWidget {
               width: double.infinity,
               height: 200,
               color: Colors.grey[300],
-              child: Image.asset(
+              child: (imageAsset.startsWith('http') || imageAsset.startsWith('https'))
+                  ? Image.network(
+                imageAsset,
+                width: double.infinity,
+                height: 300,
+                fit: BoxFit.fill,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    width: double.infinity,
+                    height: 300,
+                    color: Colors.grey[100],
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: double.infinity,
+                    height: 300,
+                    color: Colors.grey[300],
+                    child: const Center(
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  );
+                },
+              )
+                  : Image.asset(
                 imageAsset,
                 width: double.infinity,
                 height: 300,
@@ -68,7 +105,7 @@ class CardPopulaire extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     width: double.infinity,
-                    height: 200,
+                    height: 300,
                     color: Colors.grey[300],
                     child: const Center(
                       child: Icon(

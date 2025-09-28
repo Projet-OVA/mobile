@@ -63,9 +63,7 @@ class _CustomInputState extends State<CustomInput> {
             fillColor: widget.backgroundColor,
             border: widget.border,
             enabledBorder: widget.border,
-            focusedBorder: widget.border.copyWith(
-              borderSide: const BorderSide(color: Colors.black, width: 2),
-            ),
+            focusedBorder: widget.border,
             suffixIcon: widget.obscureText
                 ? IconButton(
               icon: Icon(

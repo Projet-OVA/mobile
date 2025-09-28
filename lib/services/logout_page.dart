@@ -78,12 +78,17 @@ class _LogoutPageState extends State<LogoutPage> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Center(
-        child: CustomButton(
-          text: "Se déconnecter",
-          onPressed: logout,
-        ),
+      leading: Icon(
+        Icons.logout_outlined,
+        color: Colors.red,
       ),
+      title: Text(
+        "Déconnexion",
+        style: TextStyle(color: Colors.red, fontSize: 16),
+      ),
+      onTap: () async {
+        await logout();
+      },
     );
   }
 }

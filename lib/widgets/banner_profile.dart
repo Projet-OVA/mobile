@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/settings_popup.dart';
+import '../widgets/settings.dart';
 
 class BannerProfile extends StatelessWidget {
   const BannerProfile({super.key});
@@ -51,19 +51,19 @@ class BannerProfile extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            IconButton(
-              icon: const Icon(
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Settings()),
+                );
+              },
+              child: const Icon(
                 Icons.settings_outlined,
                 color: Color(0xFF322F35),
                 size: 22,
               ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => const SettingsPopup(),
-                );
-              },
-            ),
+            )
           ],
         ),
       ),

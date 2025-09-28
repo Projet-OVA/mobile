@@ -52,6 +52,7 @@ class _CustomButtonState extends State<CustomButton> {
               },
             ),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
             padding: MaterialStateProperty.all<EdgeInsets>(
               const EdgeInsets.symmetric(vertical: 16),
             ),
@@ -60,6 +61,8 @@ class _CustomButtonState extends State<CustomButton> {
                 borderRadius: BorderRadius.circular(widget.borderRadius),
               ),
             ),
+            elevation: MaterialStateProperty.all<double>(8), // 👈 shadow permanent
+            shadowColor: MaterialStateProperty.all<Color>(Color(0xFFE6AE11)),
           ),
           child: _isLoading
               ? const SizedBox(
