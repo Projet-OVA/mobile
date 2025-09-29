@@ -1,3 +1,4 @@
+import 'package:SIRA/screens/community_page.dart';
 import 'package:SIRA/screens/defi_page.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_page.dart';
@@ -42,7 +43,7 @@ class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderSt
           ProfilePage(),
           HomePage(),
           DefiPage(),
-          Center(child: Text('Communauté')),
+          CommunityPage(),
         ],
       ),
       bottomNavigationBar: SafeArea( // ✅ ajoute SafeArea pour éviter les zones système

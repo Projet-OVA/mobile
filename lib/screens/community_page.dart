@@ -1,4 +1,4 @@
-import 'package:SIRA/screens/tabs/populaire.dart';
+import 'package:SIRA/screens/tabs/populaire_community.dart';
 import 'package:flutter/material.dart';
 
 class CommunityPage extends StatelessWidget {
@@ -7,7 +7,7 @@ class CommunityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     body: Populaire(),
+     body: PopulaireCommunity(),
     );
   }
 }

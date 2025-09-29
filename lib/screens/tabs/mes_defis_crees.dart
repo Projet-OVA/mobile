@@ -166,6 +166,7 @@ class _MesDefisCreesState extends State<MesDefisCrees> {
                               }
 
                               return CardPopulaire(
+                                eventId: event['id'],
                                 imageAsset: event['image']?.toString() ?? 'assets/images/reboisement.png',
                                 title: event['eventName']?.toString() ?? 'Sans titre',
                                 date: formattedDate,

@@ -153,4 +153,104 @@ class ApiService {
     }
   }
 
+  static Future<List<dynamic>> getEvents() async {
+    final url = Uri.parse("$baseUrl/events");
+
+    try {
+      // Récupérer le token
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      if (token == null) {
+        throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
+      }
+
+      // Faire la requête GET
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Si ton API renvoie {"data": [...]}
+        return data['data'] as List<dynamic>;
+      } else {
+        throw Exception(
+          "Erreur serveur: ${response.statusCode} - ${response.body}",
+        );
+      }
+    } catch (e, stackTrace) {
+      print("Erreur lors de la récupération des événements: $e");
+      print("Stacktrace: $stackTrace");
+      throw Exception("Erreur lors de la récupération des événements: $e");
+    }
+  }
+  static Future<int> participate({required String id}) async {
+    final url = Uri.parse("$baseUrl/events/$id/participate");
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print("Participation enregistrée avec succès");
+      } else if (response.statusCode == 400) {
+        print("Impossible de participer: ${response.body}");
+      } else if (response.statusCode == 404) {
+        print("Événement non trouvé: ${response.body}");
+      } else if (response.statusCode == 409) {
+        print("Vous participez déjà à cet événement: ${response.body}");
+      } else {
+        print("Erreur inattendue: ${response.statusCode} - ${response.body}");
+      }
+
+      return response.statusCode; // retourne le code pour le widget
+    } catch (e) {
+      print("Erreur lors de la participation: $e");
+      return 0; // code spécial pour erreur réseau
+    }
+  }
+  static Future<int> annulerParticipation({required String id}) async {
+    final url = Uri.parse("$baseUrl/events/$id/participate");
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+      final response = await http.delete(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print("Participation annulée avec succès");
+      } else if (response.statusCode == 400) {
+        print("Impossible d'annuler: ${response.body}");
+      } else if (response.statusCode == 404) {
+        print("Événement non trouvé: ${response.body}");
+      } else {
+        print("Erreur inattendue: ${response.statusCode} - ${response.body}");
+      }
+
+      return response.statusCode;
+    } catch (e) {
+      print("Erreur lors de l'annulation: $e");
+      return 0;
+    }
+  }
 }

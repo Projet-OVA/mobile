@@ -54,11 +54,10 @@ class _SettingsState extends State<Settings> {
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            // padding horizontal
             child: Divider(
-              color: Color(0xFFEBEAEB), // ta couleur personnalisée
-              thickness: 1, // épaisseur du Divider
-              height: 20, // hauteur verticale (espace autour)
+              color: Color(0xFFEBEAEB),
+              thickness: 1,
+              height: 20,
             ),
           ),
           const SizedBox(height: 20),
