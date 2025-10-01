@@ -5,6 +5,7 @@ import 'package:SIRA/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:SIRA/utils/event_sort_utils.dart';
 
 class MesDefisCrees extends StatefulWidget {
   const MesDefisCrees({Key? key}) : super(key: key);
@@ -40,7 +41,7 @@ class _MesDefisCreesState extends State<MesDefisCrees> {
                 future: _futureEvents, // Utilisation de la variable d'instance
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator(color: Color(0xFFFFC113),));
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Column(
@@ -82,9 +83,9 @@ class _MesDefisCreesState extends State<MesDefisCrees> {
                         );
                       }
 
-                      final List<dynamic> events = jsonResponse['data'];
+                      final List<dynamic> rawEvents = jsonResponse['data'];
 
-                      if (events.isEmpty) {
+                      if (rawEvents.isEmpty) {
                         // Cas sans défi
                         return RefreshIndicator(
                           onRefresh: _refreshData,
@@ -128,7 +129,7 @@ class _MesDefisCreesState extends State<MesDefisCrees> {
                           ),
                         );
                       }
-
+                      final events = EventSortUtils.sortByUpcoming(rawEvents);
                       // Cas avec des défis
                       return RefreshIndicator(
                         onRefresh: _refreshData,
@@ -171,7 +172,7 @@ class _MesDefisCreesState extends State<MesDefisCrees> {
                                 title: event['eventName']?.toString() ?? 'Sans titre',
                                 date: formattedDate,
                                 location: event['location']?.toString() ?? '',
-                                participants: "+${event['participantsCount']?.toString() ?? '0'} participants",
+                               // participants: "+${event['participantsCount']?.toString() ?? '0'} participants",
                               );
                             },
                           ),

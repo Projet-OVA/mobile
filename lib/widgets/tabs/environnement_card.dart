@@ -2,6 +2,7 @@ import 'package:SIRA/screens/tabs/detail_populaire_page.dart';
 import 'package:flutter/material.dart';
 
 class EnvironnementCard extends StatelessWidget {
+  final String eventId;
   final String imageAsset;
   final String title;
   final String date;
@@ -10,6 +11,7 @@ class EnvironnementCard extends StatelessWidget {
 
   const EnvironnementCard({
     super.key,
+    required this.eventId,
     required this.imageAsset,
     required this.title,
     required this.date,
@@ -32,22 +34,28 @@ class EnvironnementCard extends StatelessWidget {
           // Image
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              imageAsset,
+            child: SizedBox(
               width: 50,
               height: 50,
-              fit: BoxFit.fill,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: 50,
-                  height: 50,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.image_not_supported, size: 20, color: Colors.grey),
-                );
-              },
+              child: imageAsset.startsWith('http')
+                  ? Image.network(
+                imageAsset,
+                fit: BoxFit.fill,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 50,
+                    height: 50,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.image_not_supported, size: 20, color: Colors.grey),
+                  );
+                },
+              )
+                  : Image.asset(
+                imageAsset,
+                fit: BoxFit.fill,
+              ),
             ),
           ),
-
           const SizedBox(width: 08),
 
           // Infos
@@ -93,7 +101,7 @@ class EnvironnementCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const DetailPopulairePage(),
+                      builder: (_) => DetailPopulairePage(eventId: eventId),
                     ),
                   );
                 },

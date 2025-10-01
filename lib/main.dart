@@ -1,18 +1,27 @@
-import 'package:SIRA/screens/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:SIRA/screens/login_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/intro_page.dart';
 import 'screens/presentation.dart';
 import 'screens/objectif.dart';
 import 'screens/engagement.dart';
+import 'package:SIRA/services/event_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // obligatoire pour SharedPreferences avant runApp
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
 
-  runApp(MyApp(initialRoute: isLoggedIn ? "login" : "intro"));
+  runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => EventProvider()),
+          ],
+      child: MyApp(initialRoute: isLoggedIn ? "login" : "intro")
+      ),
+  );
 }
 
 class MyApp extends StatelessWidget {

@@ -189,6 +189,88 @@ class ApiService {
       throw Exception("Erreur lors de la récupération des événements: $e");
     }
   }
+  static Future<Map<String, dynamic>> getEventById({required String id}) async {
+    final url = Uri.parse("$baseUrl/events/$id");
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      if (token == null) {
+        throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
+      }
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Vérifier si les données sont dans une clé 'data' ou directement à la racine
+        if (data is Map<String, dynamic>) {
+          // Si l'API retourne { "data": { ... } }
+          if (data.containsKey('data') && data['data'] is Map<String, dynamic>) {
+            return data['data'] as Map<String, dynamic>;
+          }
+          // Si l'API retourne directement { "id": ..., "eventName": ... }
+          return data;
+        }
+
+        throw Exception("Format de réponse invalide");
+      } else {
+        throw Exception("Erreur serveur: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e, stackTrace) {
+      print("Erreur lors de la récupération de l'événement: $e");
+      print("Stacktrace: $stackTrace");
+      throw Exception("Erreur lors de la récupération de l'événement: $e");
+    }
+  }
+
+  static Future<List<dynamic>> getEventsParticipateMe() async {
+    final url = Uri.parse("$baseUrl/events/participated/me");
+
+    try {
+      // Récupérer le token
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      if (token == null) {
+        throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
+      }
+
+      // Faire la requête GET
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Si ton API renvoie {"data": [...]}
+        return data['data'] as List<dynamic>;
+      } else {
+        throw Exception(
+          "Erreur serveur: ${response.statusCode} - ${response.body}",
+        );
+      }
+    } catch (e, stackTrace) {
+      print("Erreur lors de la récupération des événements: $e");
+      print("Stacktrace: $stackTrace");
+      throw Exception("Erreur lors de la récupération des événements: $e");
+    }
+  }
   static Future<int> participate({required String id}) async {
     final url = Uri.parse("$baseUrl/events/$id/participate");
 

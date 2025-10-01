@@ -43,7 +43,14 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erreur: ${response.body}")),
+          SnackBar(
+            content: Text(
+              "L'email ou le mot de passe est incorrect",
+              style: TextStyle(color: Color(0xFF322F35)),
+            ),
+            backgroundColor: Color(0xFFFFC113),
+            duration: Duration(seconds: 3),
+          ),
         );
       }
     } catch (e) {
