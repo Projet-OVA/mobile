@@ -54,7 +54,93 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
+// Méthode 1: Sauvegarder l'ID utilisateur après login
+  static Future<void> saveUserIdFromLogin(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
 
+    String? userId;
+
+    // Essayer différentes structures de réponse
+    if (data['data']?['user']?['id'] != null) {
+      userId = data['data']['user']['id'].toString();
+    } else if (data['data']?['id'] != null) {
+      userId = data['data']['id'].toString();
+    } else if (data['user']?['id'] != null) {
+      userId = data['user']['id'].toString();
+    } else if (data['id'] != null) {
+      userId = data['id'].toString();
+    }
+
+    if (userId != null) {
+      await prefs.setString('user_id', userId);
+      print('User ID sauvegardé: $userId');
+    } else {
+      print('User ID non trouvé dans la réponse');
+      print('Structure reçue: ${data.keys}');
+    }
+  }
+
+// Méthode 2: Récupérer l'ID utilisateur sauvegardé
+  static Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
+// Méthode 3: Récupérer un utilisateur par ID
+  static Future<Map<String, dynamic>> getUserById({required String id}) async {
+    final url = Uri.parse("$baseUrl/auth/users/$id");
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      if (token == null) {
+        throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
+      }
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data is Map<String, dynamic>) {
+          if (data.containsKey('data') && data['data'] is Map<String, dynamic>) {
+            return data['data'] as Map<String, dynamic>;
+          }
+          return data;
+        }
+
+        throw Exception("Format de réponse invalide");
+      } else {
+        throw Exception("Erreur serveur: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e, stackTrace) {
+      print("Erreur lors de la récupération de l'utilisateur: $e");
+      print("Stacktrace: $stackTrace");
+      throw Exception("Erreur lors de la récupération de l'utilisateur: $e");
+    }
+  }
+
+// Méthode 4: Récupérer l'utilisateur connecté
+  static Future<Map<String, dynamic>> getCurrentUser() async {
+    final userId = await getUserId();
+
+    if (userId == null) {
+      throw Exception("Aucun utilisateur connecté trouvé");
+    }
+
+    print("Utilisateur connecté ID: $userId");
+    return getUserById(id: userId);
+  }
   // Endpoint logout
   static Future<http.Response> logout(String token) async {
     final url = Uri.parse("$baseUrl/auth/logout");
@@ -335,4 +421,40 @@ class ApiService {
       return 0;
     }
   }
+  static Future<List<dynamic>> getMyBadges() async {
+    final url = Uri.parse("$baseUrl/badges/my-badges");
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      if (token == null) {
+        throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
+      }
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Ici on décode et on retourne directement la liste
+        final decoded = jsonDecode(response.body);
+        // selon ton API, ça peut être decoded["data"] ou directement decoded
+        return decoded is List ? decoded : (decoded["data"] ?? []);
+      } else {
+        throw Exception(
+          "Erreur serveur: ${response.statusCode} - ${response.body}",
+        );
+      }
+    } catch (e, stackTrace) {
+      print("Erreur lors de la récupération des badges: $e");
+      print("Stacktrace: $stackTrace");
+      throw Exception("Erreur lors de la récupération des badges: $e");
+    }
+  }
+
 }

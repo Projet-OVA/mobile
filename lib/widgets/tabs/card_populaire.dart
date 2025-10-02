@@ -74,11 +74,16 @@ class CardPopulaire extends StatelessWidget {
                   ),
                 ),
                 /// Contenu
-                Padding(
-                  padding: const EdgeInsets.all(16),
+                Expanded(
+                   child: Padding(
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                    Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       Text(
                         title,
                         style: const TextStyle(
@@ -117,7 +122,7 @@ class CardPopulaire extends StatelessWidget {
                           ]),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
 
                       /// Participants + bouton
                       Row(
@@ -187,9 +192,11 @@ class CardPopulaire extends StatelessWidget {
                           ),
                         ],
                       ),
+                        ]
+                    )
                     ],
                   ),
-                ),
+                ),),
               ],
             ),
           ),

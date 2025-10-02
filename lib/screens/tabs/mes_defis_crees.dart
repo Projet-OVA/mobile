@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:SIRA/utils/event_sort_utils.dart';
+import 'package:SIRA/utils/date_format_utils.dart';
 
 class MesDefisCrees extends StatefulWidget {
   const MesDefisCrees({Key? key}) : super(key: key);
@@ -152,19 +153,7 @@ class _MesDefisCreesState extends State<MesDefisCrees> {
                               }
 
                               // Formatage de la date
-                              String formattedDate = '';
-                              if (event['eventDate'] != null) {
-                                try {
-                                  DateTime dateTime = DateTime.parse(event['eventDate'].toString());
-                                  List<String> mois = [
-                                    '', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-                                    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
-                                  ];
-                                  formattedDate = '${dateTime.day} ${mois[dateTime.month]} ${dateTime.year}';
-                                } catch (e) {
-                                  formattedDate = event['eventDate']?.toString() ?? '';
-                                }
-                              }
+                              final formattedDate = DateFormatUtils.formatDateFull(event['eventDate'] ?? 'JJ/MMMM/AAAA');
 
                               return CardPopulaire(
                                 eventId: event['id'],

@@ -26,22 +26,36 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text,
       );
 
-      if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        print("Login response: $data");
+        print(" Login response complète: $data");
+        print(" Clés disponibles: ${data.keys}");
 
-        // Si ton API retourne un token JWT ou info utilisateur
+        // Afficher la structure pour comprendre où se trouve l'ID
+        if (data['data'] != null) {
+          print(" data.keys: ${data['data'].keys}");
+          if (data['data']['user'] != null) {
+            print(" user: ${data['data']['user']}");
+          }
+        }
+
         final prefs = await SharedPreferences.getInstance();
-        final token = decoded["data"]["accessToken"];
+
+        // Sauvegarder le token
+        final token = data["data"]["accessToken"];
         await prefs.setBool("isLoggedIn", true);
-        await prefs.setString("accessToken", token); // si JWT
+        await prefs.setString("accessToken", token);
+        print("Token sauvegardé");
+
+        // Sauvegarder l'ID utilisateur
+        await ApiService.saveUserIdFromLogin(data);
 
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const BienvenuPage()),
         );
       } else {
+        print("Erreur login: ${response.statusCode}");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -54,8 +68,12 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
+      print(" Erreur login: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur de connexion: $e")),
+        SnackBar(
+          content: Text("Erreur de connexion: $e"),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
