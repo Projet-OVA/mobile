@@ -74,8 +74,6 @@ class _DetailPopulairePageState extends State<DetailPopulairePage> {
 
           return Consumer<EventProvider>(
             builder: (context, eventProvider, child) {
-              final isParticipating = eventProvider.isParticipating(widget.eventId);
-              final isLoading = eventProvider.isLoading(widget.eventId);
 
               return SingleChildScrollView(
                 child: Column(
@@ -319,41 +317,6 @@ class _DetailPopulairePageState extends State<DetailPopulairePage> {
                                 color: Color(0xFFABAAAC),
                               ),
                             ),
-
-                            const SizedBox(height: 24),
-
-                            // Bouton
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Icône favoris à gauche
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFFF9E7),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: IconButton(
-                                    onPressed: () {
-                                      // action favoris
-                                    },
-                                    icon: const Icon(Icons.bookmark_border_outlined, color: Color(0xFF322F35)),
-                                  ),
-                                ),
-                                // Bouton "Participer" à droite
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: CustomButton(
-                                      text: isParticipating ? "Se désinscrire" : "Participer",
-                                      onPressed: isLoading
-                                          ? null
-                                          : () => eventProvider.toggleParticipation(context, widget.eventId),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -362,6 +325,58 @@ class _DetailPopulairePageState extends State<DetailPopulairePage> {
                 ),
               );
             },
+          );
+        },
+      ),
+
+      bottomNavigationBar: Consumer<EventProvider>(
+        builder: (context, eventProvider, _) {
+          final isParticipating = eventProvider.isParticipating(widget.eventId);
+          final isLoading = eventProvider.isLoading(widget.eventId);
+
+          return SafeArea(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 07),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: Color(0xFFF5F5F5), width: 1),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Icône favoris à gauche
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF9E7),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        // action favoris
+                      },
+                      icon: const Icon(Icons.bookmark_border_outlined,
+                          color: Color(0xFF322F35)),
+                    ),
+                  ),
+
+                  // Bouton "Participer" à droite
+                  SizedBox(
+                    width: 350, // largeur fixe pour que ça reste propre
+                    child: CustomButton(
+                      text: isParticipating ? "Se désinscrire" : "Participer",
+                      onPressed: isLoading
+                          ? null
+                          : () => eventProvider.toggleParticipation(
+                        context,
+                        widget.eventId,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         },
       ),

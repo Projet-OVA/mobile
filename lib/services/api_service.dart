@@ -238,6 +238,15 @@ class ApiService {
       throw Exception("Erreur lors de la récupération des événements: $e");
     }
   }
+  static Future<int> getMyEventsCount() async {
+    final response = await getDefi();
+    final decoded = jsonDecode(response.body);
+    if (decoded['data'] != null && decoded['data'] is List) {
+      final events = decoded['data'] as List<dynamic>;
+      return events.length; // nombre total d'événements
+    }
+    return 0;
+  }
 
   static Future<List<dynamic>> getEvents() async {
     final url = Uri.parse("$baseUrl/events");
@@ -455,6 +464,51 @@ class ApiService {
       print("Stacktrace: $stackTrace");
       throw Exception("Erreur lors de la récupération des badges: $e");
     }
+  }
+
+  /// Récupère l'historique des quiz du user
+  static Future<List<Map<String, dynamic>>> getUserQuizHistory() async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString("accessToken");
+
+  if (token == null) {
+  throw Exception("Token manquant. Connectez-vous à nouveau.");
+  }
+
+  final url = Uri.parse("$baseUrl/quiz/history");
+
+  final response = await http.get(
+  url,
+  headers: {
+  'Authorization': 'Bearer $token',
+  'Accept': 'application/json',
+  },
+  );
+
+  if (response.statusCode == 200) {
+  final decoded = jsonDecode(response.body);
+  final List data = decoded["data"] ?? [];
+  return List<Map<String, dynamic>>.from(data);
+  } else {
+  throw Exception(
+  "Erreur serveur: ${response.statusCode} - ${response.body}",
+  );
+  }
+  }
+
+  /// Statistiques du user : total quiz participés et réussis
+  static Future<Map<String, int>> getUserQuizStats({int successThreshold = 50}) async {
+    final history = await getUserQuizHistory();
+
+    final int totalParticipated = history.length;
+    final int totalSuccess = history.where((quiz) {
+      return (quiz["scorePercentage"] ?? 0) >= successThreshold;
+    }).length;
+
+    return {
+      "participated": totalParticipated,
+      "success": totalSuccess,
+    };
   }
 
 }

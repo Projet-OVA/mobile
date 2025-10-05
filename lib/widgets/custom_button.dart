@@ -29,7 +29,9 @@ class _CustomButtonState extends State<CustomButton> {
       try {
         await widget.onPressed!();
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
     }
   }
@@ -38,8 +40,19 @@ class _CustomButtonState extends State<CustomButton> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: SizedBox(
+      child: Container(
         width: widget.width ?? double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0xFFE6AE11), // 👈 Couleur de l'ombre solid
+              offset: Offset(0, 6), // 👈 Décalage de 6px vers le bas
+              blurRadius: 0, // 👈 0 = shadow solid (pas de flou)
+              spreadRadius: 0,
+            ),
+          ],
+        ),
         child: ElevatedButton(
           onPressed: _handlePress,
           style: ButtonStyle(
@@ -51,6 +64,8 @@ class _CustomButtonState extends State<CustomButton> {
                 return const Color(0xFFFFC113); // couleur bouton actif
               },
             ),
+            elevation: MaterialStateProperty.all<double>(0), // 👈 Important: 0 car on gère l'ombre avec Container
+            shadowColor: MaterialStateProperty.all<Color>(Colors.transparent),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
             overlayColor: MaterialStateProperty.all(Colors.transparent),
             padding: MaterialStateProperty.all<EdgeInsets>(
@@ -61,8 +76,6 @@ class _CustomButtonState extends State<CustomButton> {
                 borderRadius: BorderRadius.circular(widget.borderRadius),
               ),
             ),
-            elevation: MaterialStateProperty.all<double>(8), // 👈 shadow permanent
-            shadowColor: MaterialStateProperty.all<Color>(Color(0xFFE6AE11)),
           ),
           child: _isLoading
               ? const SizedBox(
@@ -74,11 +87,11 @@ class _CustomButtonState extends State<CustomButton> {
             ),
           )
               : Row(
-            mainAxisSize: MainAxisSize.min, // 👈 prend juste la place nécessaire
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (widget.icon != null) ...[
-                Icon(widget.icon, size: 30, color: Color(0xFF322F35)),
+                Icon(widget.icon, size: 30, color: const Color(0xFF322F35)),
                 const SizedBox(width: 7),
               ],
               Text(

@@ -83,7 +83,7 @@ class _RecompenseState extends State<Recompense> {
                         height: 250,
                         scrollDirection: Axis.horizontal,
                         viewportFraction: 0.6,
-                        enableInfiniteScroll: true,
+                        enableInfiniteScroll: false,
                         enlargeCenterPage: false,
                         padEnds: false,
                         pageSnapping: true,

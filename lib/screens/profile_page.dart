@@ -4,6 +4,7 @@ import 'package:SIRA/widgets/tabs/my_carousel_podcast.dart';
 import 'package:flutter/material.dart';
 import '../widgets/my_carousel.dart';
 import '../screens/tabs/recompense.dart';
+import 'package:SIRA/services/api_service.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -41,62 +42,79 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildProgression() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 20), // pour éviter que ça colle en bas
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          SizedBox(height: 16),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: CardStatistique(
-                    number: "12",
-                    label: "Quizz Réussis",
-                    imagePath: "assets/images/quizze.png",
-                  ),
+        children: [
+          const SizedBox(height: 16),
+        Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Row(
+    children: [
+    Expanded(
+    child: CardStatistique(
+    number: "10",
+    label: "Quizz Réussis",
+    imagePath: "assets/images/quizze.png",
+    ),
+    ),
+    const SizedBox(width: 16),
+    const Expanded(
+    child: CardStatistique(
+    number: "09",
+    label: "Parcours",
+    imagePath: "assets/images/evolution.png",
+    ),
+    ),
+    ],
+    ),
+    ),
+          const SizedBox(height: 15),
+          FutureBuilder<int>(
+            future: ApiService.getMyEventsCount(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFFFC113)),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Center(child: Text("Erreur: ${snapshot.error}"));
+              }
+
+              final eventsCount = snapshot.data ?? 0;
+
+             return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CardStatistique(
+                        number: "$eventsCount",
+                        label: "Défis Créés",
+                        imagePath: "assets/images/check.png",
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: CardStatistique(
+                        number: "18",
+                        label: "Défis Relevés",
+                        imagePath: "assets/images/releve.png",
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: CardStatistique(
-                    number: "09",
-                    label: "Parcours",
-                    imagePath: "assets/images/evolution.png",
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
-          SizedBox(height: 15),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: CardStatistique(
-                    number: "05",
-                    label: "Défis Créés",
-                    imagePath: "assets/images/check.png",
-                  ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: CardStatistique(
-                    number: "18",
-                    label: "Défis Relevés",
-                    imagePath: "assets/images/quizze.png",
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 0),
+          const SizedBox(height: 24),
+          const Padding(
+            padding: EdgeInsets.only(left: 16, right: 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Title(title: "Historique Parcours "),
                 MyCarousel(),
                 SizedBox(height: 16),

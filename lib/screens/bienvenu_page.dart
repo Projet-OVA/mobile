@@ -29,14 +29,14 @@ class _BienvenuPageState extends State<BienvenuPage>
     _controller.forward();
 
     // Après 5s → change le texte et rejoue l’animation
-    Timer(const Duration(seconds: 05), () {
+    Timer(const Duration(seconds: 5), () {
       setState(() {
         showFirstText = false;
       });
       _controller.reset();
       _controller.forward();
 
-      // Encore 3s → redirection vers le CustomTabBar
+      // Encore 10s → redirection vers le CustomTabBar
       Timer(const Duration(seconds: 10), () {
         Navigator.pushReplacement(
           context,
@@ -59,15 +59,41 @@ class _BienvenuPageState extends State<BienvenuPage>
       body: Center(
         child: FadeTransition(
           opacity: _animation,
-          child: Text(
-            showFirstText
-                ? "Bienvenue sur Sira"
-                : "« ...Réveiller le bâtisseur de Nations qui dort en chacun de vous. »",
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28.0), // 👈 padding ajouté
+            child: showFirstText
+                ? const Text(
+              "Bienvenue sur Sira",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            )
+                : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text(
+                  "« ...Réveiller le bâtisseur de Nations qui dort en chacun de vous. »",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "Cheikh Anta Diop",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

@@ -103,7 +103,7 @@ class _BannerProfileState extends State<BannerProfile> {
                           return const Text("Aucun badge attribué");
                         }
                         return Text(
-                          "Badges : ${badges.map((b) => b['name'] ?? b.toString()).join(", ")}",
+                          "Badge : ${badges.isNotEmpty ? (badges.last['name'] ?? badges.last.toString()) : "Aucun"}",
                           style: const TextStyle(
                             fontSize: 14,
                             color: Color(0xFF322F35),
