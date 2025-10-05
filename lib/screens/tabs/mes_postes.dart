@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import '../../widgets/tabs/video_card.dart'; // Assurez-vous que c'est le bon fichier
 
 class Video extends StatelessWidget {
@@ -22,7 +22,7 @@ class CenteredTextPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: const [
-          VideoCard(
+          VideoCardPublication(
             thumbnailUrl: 'assets/images/enfants.png',
             title: 'Rôle de l\'Éducation Populaire et la Citoyenneté',
             subtitle: 'Saliou Diop',
@@ -31,7 +31,7 @@ class CenteredTextPage extends StatelessWidget {
             //videoUrl: 'assets/images/profiledetail.png',
           ),
           SizedBox(height: 16),
-          VideoCard(
+          VideoCardPublication(
             thumbnailUrl: 'assets/images/card.png',
             title: 'Rôle de l\'Éducation Populaire et la Citoyenneté',
             subtitle: 'Saliou Diop',
@@ -40,7 +40,7 @@ class CenteredTextPage extends StatelessWidget {
             //videoUrl: 'assets/images/profiledetail.png',
           ),
           SizedBox(height: 16),
-          VideoCard(
+          VideoCardPublication(
             thumbnailUrl: 'assets/images/enfants.png',
             title: 'Rôle de l\'Éducation Populaire et la Citoyenneté',
             subtitle: 'Saliou Diop',
@@ -52,4 +52,4 @@ class CenteredTextPage extends StatelessWidget {
       ),
     );
   }
-}
+}*/

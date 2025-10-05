@@ -1,39 +1,47 @@
-import 'package:flutter/material.dart';
-import '../../custom_button.dart';
 
-class Question extends StatefulWidget {
+import 'package:flutter/material.dart';
+import '../../../widgets/custom_button.dart';
+import '../../../services/quiz_service.dart';
+import '../../../data/models/quiz_model.dart';
+import 'quiz_result_screen.dart';
+
+class QuizQuestionScreen extends StatefulWidget {
+  final String quizId;
+  final String quizTitle;
+
+  const QuizQuestionScreen({
+    super.key,
+    required this.quizId,
+    required this.quizTitle,
+  });
+
   @override
-  _QuestionState createState() => _QuestionState();
+  State<QuizQuestionScreen> createState() => _QuizQuestionScreenState();
 }
 
-class _QuestionState extends State<Question> with SingleTickerProviderStateMixin {
-  int currentQuestion = 1;
-  int totalQuestions = 10;
-  int? selectedAnswer;
-  bool hasSubmitted = false;
-  int correctAnswer = 1; // Index de la bonne réponse (0-based)
+class _QuizQuestionScreenState extends State<QuizQuestionScreen>
+    with SingleTickerProviderStateMixin {
+  QuizDetail? quizDetail;
+  bool isLoading = true;
+  String? errorMessage;
+
+  int currentQuestionIndex = 0;
+  Map<String, String> userAnswers = {}; // questionId -> responseId
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-
-  List<String> answers = [
-    "A. Un devoir optionnel",
-    "B. Un droit fondamental",
-    "C. Un privilège réservé aux diplômés",
-    "D. Une activité politique"
-  ];
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut)
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    _animationController.forward();
+    _loadQuiz();
   }
 
   @override
@@ -42,94 +50,151 @@ class _QuestionState extends State<Question> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  Color getAnswerColor(int index) {
-    if (!hasSubmitted) {
-      return selectedAnswer == index ? Colors.green : Colors.transparent;
-    } else {
-      if (index == correctAnswer) {
-        return Colors.green;
-      } else if (index == selectedAnswer && index != correctAnswer) {
-        return Colors.red;
-      }
-      return Colors.transparent;
-    }
-  }
-
-  IconData? getAnswerIcon(int index) {
-    if (!hasSubmitted) {
-      return selectedAnswer == index ? Icons.check_circle : null;
-    } else {
-      if (index == correctAnswer) {
-        return Icons.check_circle;
-      } else if (index == selectedAnswer && index != correctAnswer) {
-        return Icons.cancel;
-      }
-      return null;
-    }
-  }
-
-  void selectAnswer(int index) {
-    if (!hasSubmitted) {
+  Future<void> _loadQuiz() async {
+    try {
+      final quiz = await QuizService.getQuiz(widget.quizId);
       setState(() {
-        selectedAnswer = index;
+        quizDetail = quiz;
+        isLoading = false;
+      });
+      _animationController.forward();
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isLoading = false;
       });
     }
   }
 
-  void submitAnswer() {
-    if (selectedAnswer != null && !hasSubmitted) {
-      setState(() {
-        hasSubmitted = true;
-      });
+  void _selectAnswer(String optionId) {
+    setState(() {
+      userAnswers[quizDetail!.questions[currentQuestionIndex].id] = optionId;
+    });
+  }
 
-      // Simulation d'une transition vers la question suivante après 2 secondes
-      Future.delayed(Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() {
-            currentQuestion++;
-            selectedAnswer = null;
-            hasSubmitted = false;
-          });
-          _animationController.reset();
-          _animationController.forward();
-        }
+  Future<void> _nextQuestion() async {
+    // Définir currentQuestion localement pour la validation
+    final currentQuestion = quizDetail!.questions[currentQuestionIndex];
+
+    // Vérifier qu'une réponse a été sélectionnée
+    if (!userAnswers.containsKey(currentQuestion.id)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez sélectionner une réponse'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (currentQuestionIndex < quizDetail!.questions.length - 1) {
+      setState(() {
+        currentQuestionIndex++;
       });
+      _animationController.reset();
+      _animationController.forward();
+    } else {
+      // Dernière question - soumettre le quiz
+      await _submitQuiz();
+    }
+  }
+
+  Future<void> _submitQuiz() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: Color(0xFFFFC113)),
+      ),
+    );
+
+    try {
+      final answers = userAnswers.entries
+          .map((e) => QuizAnswer(questionId: e.key, responseId: e.value))
+          .toList();
+
+      final submission = QuizSubmission(
+        quizId: widget.quizId,
+        answers: answers,
+      );
+
+      final result = await QuizService.submitQuiz(submission);
+
+      Navigator.pop(context); // Fermer le loader
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => QuizResultScreen(result: result),
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: $e')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    bool isTablet = screenWidth > 600;
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        body: const Center(
+          child: CircularProgressIndicator(color: Color(0xFFFFC113)),
+        ),
+      );
+    }
+
+    if (errorMessage != null || quizDetail == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 60, color: Colors.red),
+              const SizedBox(height: 16),
+              const Text('Erreur de chargement'),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Retour'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Définir les variables locales
+    final currentQuestion = quizDetail!.questions[currentQuestionIndex];
+    final totalQuestions = quizDetail!.questions.length;
+    final questionNumber = currentQuestionIndex + 1;
+    final questionsRemaining = totalQuestions - currentQuestionIndex;
 
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnimation,
           child: Column(
             children: [
-              // Header avec croix et progress
+              // Header
               Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: isTablet ? 32 : 20,
-                    vertical: isTablet ? 24 : 16
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Icon(
-                        Icons.close,
-                        size: isTablet ? 32 : 28,
-                        color: Colors.black87,
-                      ),
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(Icons.close, size: 28, color: Colors.black87),
                     ),
                     Text(
-                      "$currentQuestion/$totalQuestions",
-                      style: TextStyle(
-                        fontSize: isTablet ? 20 : 16,
+                      "$questionNumber/$totalQuestions",
+                      style: const TextStyle(
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
@@ -140,19 +205,19 @@ class _QuestionState extends State<Question> with SingleTickerProviderStateMixin
 
               // Barre de progression
               Container(
-                margin: EdgeInsets.symmetric(horizontal: isTablet ? 32 : 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: LinearProgressIndicator(
-                    value: currentQuestion / totalQuestions,
-                    backgroundColor: Color(0xFFFFECB6),
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFC113)),
-                    minHeight: isTablet ? 12 : 8,
+                    value: questionNumber / totalQuestions,
+                    backgroundColor: const Color(0xFFFFECB6),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFFC113)),
+                    minHeight: 8,
                   ),
                 ),
               ),
 
-              SizedBox(height: isTablet ? 40 : 30),
+              const SizedBox(height: 30),
 
               // Question Card
               Stack(
@@ -160,56 +225,44 @@ class _QuestionState extends State<Question> with SingleTickerProviderStateMixin
                 alignment: Alignment.topCenter,
                 children: [
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20)
-                        .add(EdgeInsets.only(top: isTablet ? 40 : 30)),
+                    margin: const EdgeInsets.symmetric(horizontal: 20)
+                        .add(const EdgeInsets.only(top: 30)),
                     width: double.infinity,
-                    constraints: BoxConstraints(
-                      maxWidth: double.infinity,
-                    ),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFFFFC113), Color(0xFFFFC113)],
-                      ),
-                      borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
+                      color: const Color(0xFFFFC113),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFFFFC113).withOpacity(0.3),
+                          color: const Color(0xFFFFC113).withOpacity(0.3),
                           blurRadius: 20,
-                          offset: Offset(0, 8),
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        isTablet ? 32 : 24,
-                        isTablet ? 60 : 45,
-                        isTablet ? 32 : 24,
-                        isTablet ? 32 : 24,
-                      ),
+                      padding: const EdgeInsets.fromLTRB(24, 45, 24, 24),
                       child: Column(
                         children: [
                           Text(
-                            "Question $currentQuestion",
-                            style: TextStyle(
+                            "Question $questionNumber",
+                            style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w600,
                               color: Colors.black87,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
-                            "Citoyenneté & Droits",
+                            widget.quizTitle,
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.black.withOpacity(0.7),
                             ),
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Text(
-                            "Le droit de voter est :",
-                            style: TextStyle(
+                            currentQuestion.content,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
                               color: Colors.black87,
@@ -221,32 +274,29 @@ class _QuestionState extends State<Question> with SingleTickerProviderStateMixin
                     ),
                   ),
 
-                  // Cercle positionné sur le bord supérieur
+                  // Cercle avec le nombre de questions restantes
                   Positioned(
                     top: 0,
                     child: Container(
-                      width: isTablet ? 80 : 60,
-                      height: isTablet ? 80 : 60,
+                      width: 60,
+                      height: 60,
                       decoration: BoxDecoration(
-                        color: Color(0xFFFFC113),
+                        color: const Color(0xFFFFC113),
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 3,
-                        ),
+                        border: Border.all(color: Colors.white, width: 3),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 8,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
                       child: Center(
                         child: Text(
-                          "${totalQuestions - currentQuestion + 1}",
-                          style: TextStyle(
-                            fontSize: isTablet ? 28 : 24,
+                          "$questionsRemaining",
+                          style: const TextStyle(
+                            fontSize: 24,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF232125),
                           ),
@@ -257,53 +307,51 @@ class _QuestionState extends State<Question> with SingleTickerProviderStateMixin
                 ],
               ),
 
-              SizedBox(height: isTablet ? 40 : 30),
+              const SizedBox(height: 30),
 
-              // Réponses + bouton en bas
+              // Options de réponse
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: isTablet ? 32 : 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
-                      // Liste scrollable des réponses
                       Expanded(
                         child: SingleChildScrollView(
                           child: Column(
-                            children: answers.asMap().entries.map((entry) {
-                              int index = entry.key;
-                              String answer = entry.value;
+                            children: currentQuestion.options.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final option = entry.value;
+                              final isSelected = userAnswers[currentQuestion.id] == option.id;
+                              final letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
                               return Container(
-                                margin: EdgeInsets.only(bottom: isTablet ? 16 : 12),
+                                margin: const EdgeInsets.only(bottom: 12),
                                 child: Material(
                                   color: Colors.transparent,
                                   child: InkWell(
-                                    onTap: () => selectAnswer(index),
-                                    borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                                    onTap: () => _selectAnswer(option.id),
+                                    borderRadius: BorderRadius.circular(12),
                                     child: AnimatedContainer(
-                                      duration: Duration(milliseconds: 200),
+                                      duration: const Duration(milliseconds: 200),
                                       width: double.infinity,
-                                      constraints: BoxConstraints(
-                                        maxWidth: isTablet ? 600 : double.infinity,
-                                      ),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: isTablet ? 24 : 20,
-                                        vertical: isTablet ? 20 : 16,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 16,
                                       ),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                                        borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: getAnswerColor(index) != Colors.transparent
-                                              ? getAnswerColor(index)
-                                              : Color(0xFFE0E0E0),
-                                          width: getAnswerColor(index) != Colors.transparent ? 2 : 1,
+                                          color: isSelected
+                                              ? const Color(0xFFFFC113)
+                                              : const Color(0xFFE0E0E0),
+                                          width: isSelected ? 2 : 1,
                                         ),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.black.withOpacity(0.05),
                                             blurRadius: 8,
-                                            offset: Offset(0, 2),
+                                            offset: const Offset(0, 2),
                                           ),
                                         ],
                                       ),
@@ -311,19 +359,19 @@ class _QuestionState extends State<Question> with SingleTickerProviderStateMixin
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              answer,
-                                              style: TextStyle(
-                                                fontSize: isTablet ? 18 : 16,
+                                              "${letters[index]}. ${option.content}",
+                                              style: const TextStyle(
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.w500,
                                                 color: Colors.black87,
                                               ),
                                             ),
                                           ),
-                                          if (getAnswerIcon(index) != null)
-                                            Icon(
-                                              getAnswerIcon(index),
-                                              color: getAnswerColor(index),
-                                              size: isTablet ? 28 : 24,
+                                          if (isSelected)
+                                            const Icon(
+                                              Icons.check_circle,
+                                              color: Color(0xFFFFC113),
+                                              size: 24,
                                             ),
                                         ],
                                       ),
@@ -336,16 +384,13 @@ class _QuestionState extends State<Question> with SingleTickerProviderStateMixin
                         ),
                       ),
 
-                      // Bouton toujours visible
+                      // Bouton Suivant
                       SafeArea(
                         child: CustomButton(
-                          text: "Suivant",
-                          onPressed: () async {
-                            // Exemple : action asynchrone
-                            await Future.delayed(const Duration(seconds: 2));
-                            // Navigation ou autre action après chargement
-                            print("Action terminée");
-                          },
+                          text: currentQuestionIndex < totalQuestions - 1
+                              ? "Suivant"
+                              : "Terminer",
+                          onPressed: _nextQuestion,
                         ),
                       ),
                     ],

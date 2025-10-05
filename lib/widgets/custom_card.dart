@@ -27,7 +27,7 @@ class CustomCard extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const DetailParcours(),
+                builder: (context) => const DetailParcours( courseId: ''),
               ),
             );
           },
