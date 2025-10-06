@@ -10,7 +10,7 @@ import 'screens/engagement.dart';
 import 'package:SIRA/services/event_provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // obligatoire pour SharedPreferences avant runApp
+  WidgetsFlutterBinding.ensureInitialized(); 
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
 
