@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:SIRA/models/badge_progress.dart';
 
 class ApiService {
   static const String baseUrl = "https://sira-backendv1.onrender.com/api";
@@ -259,7 +260,6 @@ class ApiService {
       if (token == null) {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
       }
-
       // Faire la requête GET
       final response = await http.get(
         url,
@@ -509,6 +509,29 @@ class ApiService {
       "participated": totalParticipated,
       "success": totalSuccess,
     };
+  }
+  Future<List<BadgeProgress>> fetchBadgeProgress() async {
+    final progressResponse = await http.get(Uri.parse('$baseUrl/progression'));
+    final progressData = json.decode(progressResponse.body);
+
+    final badgeResponse = await http.get(Uri.parse('$baseUrl/badges/my-badges'));
+    final badgeData = json.decode(badgeResponse.body);
+
+    List<BadgeProgress> result = [];
+
+    for (var badge in badgeData) {
+      String name = badge['name'];
+      String image = badge['image'];
+      int progress = progressData[name] ?? 0;
+
+      result.add(BadgeProgress(
+        title: name,
+        progress: progress,
+        imagePath: image,
+      ));
+    }
+
+    return result;
   }
 
 }
