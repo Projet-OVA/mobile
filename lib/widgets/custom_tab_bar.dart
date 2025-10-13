@@ -3,60 +3,92 @@ import 'package:SIRA/screens/defi_page.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_page.dart';
 import '../screens/profile_page.dart';
+import '../services/auth_storage.dart';
 
 class CustomTabBar extends StatefulWidget {
-  const CustomTabBar({super.key});
+  final Map<String, int?>? pageTabsState; // onglets internes sauvegardés
+
+  const CustomTabBar({super.key, this.pageTabsState});
 
   @override
   State<CustomTabBar> createState() => _CustomTabBarState();
 }
 
-class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _CustomTabBarState extends State<CustomTabBar> with WidgetsBindingObserver {
+  int _currentIndex = 1; // Home par défaut
+  Map<String, int?> _pageTabsState = {};
 
   final List<String> _labels = ['Profil', 'Parcours', 'Défis', 'Communauté'];
-  final List<IconData?> _icons = [null, Icons.window_rounded, Icons.flag_outlined, Icons.maps_ugc_sharp];
+  final List<IconData?> _icons = [
+    null,
+    Icons.window_rounded,
+    Icons.flag_outlined,
+    Icons.maps_ugc_sharp
+  ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this, initialIndex: 1);
-    _tabController.addListener(() {
-      setState(() {}); // pour mettre à jour le border bottom
-    });
+    WidgetsBinding.instance.addObserver(this);
+    _pageTabsState = widget.pageTabsState ?? {};
+    _loadSavedTab();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
+  // Sauvegarde automatique quand l'app passe en arrière-plan
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      AuthStorage.saveSelectedTab(_currentIndex);
+    }
+  }
+
+  // Chargement du dernier onglet ouvert
+  Future<void> _loadSavedTab() async {
+    final savedIndex = await AuthStorage.getSelectedTab();
+    setState(() {
+      _currentIndex = savedIndex ?? 1; // Home par défaut
+    });
+  }
+
+  // Changement d'onglet
+  Future<void> _onTabTapped(int index) async {
+    setState(() {
+      _currentIndex = index;
+    });
+    await AuthStorage.saveSelectedTab(index);
+  }
+
+  // Pages principales
+  List<Widget> get _pages => [
+    ProfilePage(initialTabIndex: _pageTabsState['profile']),
+    const HomePage(),
+    DefiPage(initialTabIndex: _pageTabsState['defi']),
+    CommunityPage(initialTabIndex: _pageTabsState['community']),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          ProfilePage(),
-          HomePage(),
-          DefiPage(),
-          CommunityPage(),
-        ],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
       ),
-      bottomNavigationBar: SafeArea( // ✅ ajoute SafeArea pour éviter les zones système
+      bottomNavigationBar: SafeArea(
         child: Container(
           color: Colors.white,
           child: Row(
             children: List.generate(_labels.length, (index) {
-              final bool isActive = _tabController.index == index;
+              final bool isActive = _currentIndex == index;
               return Expanded(
                 child: GestureDetector(
-                  onTap: () {
-                    _tabController.animateTo(index);
-                  },
+                  onTap: () => _onTabTapped(index),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -64,7 +96,7 @@ class _CustomTabBarState extends State<CustomTabBar> with SingleTickerProviderSt
                       if (index == 0)
                         CircleAvatar(
                           radius: 16,
-                          backgroundImage: AssetImage('assets/images/profile.png'),
+                          backgroundImage: const AssetImage('assets/images/profile.png'),
                         )
                       else
                         Icon(

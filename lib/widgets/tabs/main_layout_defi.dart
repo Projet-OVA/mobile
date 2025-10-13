@@ -5,11 +5,13 @@ import 'filter_bar_defi.dart';
 class MainLayoutDefi extends StatelessWidget {
   final Widget child;
   final ValueChanged<int> onFilterSelected;
+  final int selectedIndex;
 
   const MainLayoutDefi({
     super.key,
     required this.child,
     required this.onFilterSelected,
+    this.selectedIndex = 0,
   });
 
   @override
@@ -23,7 +25,9 @@ class MainLayoutDefi extends StatelessWidget {
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             // FilterBar fixe en haut
-            SliverToBoxAdapter(child: FilterBar(onFilterSelected: onFilterSelected)),
+            SliverToBoxAdapter(child: FilterBar(
+                selectedIndex: selectedIndex,
+                onFilterSelected: onFilterSelected)),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             // Contenu filtré scrollable

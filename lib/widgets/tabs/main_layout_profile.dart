@@ -5,11 +5,13 @@ import '../filter_bar_profil.dart';
 class MainLayoutProfile extends StatelessWidget {
   final Widget child;
   final ValueChanged<int> onFilterSelected;
+  final int initialFilterIndex; // ✅ AJOUTÉ
 
   const MainLayoutProfile({
     super.key,
     required this.child,
     required this.onFilterSelected,
+    this.initialFilterIndex = 0, // ✅ Par défaut 0
   });
 
   @override
@@ -23,15 +25,18 @@ class MainLayoutProfile extends StatelessWidget {
             // FilterBar fixe en haut
             SliverToBoxAdapter(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 1), // 👈 margin externe
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF5F5F5),
                   borderRadius: BorderRadius.circular(40),
                 ),
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7), // 👈 padding interne
-                    child: FilterBarProfil(onFilterSelected: onFilterSelected),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+                    child: FilterBarProfil(
+                      onFilterSelected: onFilterSelected,
+                      initialIndex: initialFilterIndex, // ✅ AJOUTÉ
+                    ),
                   ),
                 ),
               ),

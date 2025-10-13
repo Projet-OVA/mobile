@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:SIRA/models/badge_progress.dart';
+import 'package:SIRA/services/auth_storage.dart';
 
 class ApiService {
   static const String baseUrl = "https://sira-backendv1.onrender.com/api";
@@ -55,7 +55,7 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
-// Méthode 1: Sauvegarder l'ID utilisateur après login
+//Sauvegarder l'ID utilisateur après login
   static Future<void> saveUserIdFromLogin(Map<String, dynamic> data) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -92,8 +92,7 @@ class ApiService {
     final url = Uri.parse("$baseUrl/auth/users/$id");
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await AuthStorage.getToken();
 
       if (token == null) {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
@@ -166,8 +165,7 @@ class ApiService {
     final request = http.MultipartRequest('POST', url);
     try {
       // Récupérer le token d'authentification
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await AuthStorage.getToken();
 
       if (token == null) {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
@@ -210,8 +208,7 @@ class ApiService {
 
     try {
       // Récupérer le token
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await AuthStorage.getToken();
 
       if (token == null) {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
@@ -288,8 +285,7 @@ class ApiService {
     final url = Uri.parse("$baseUrl/events/$id");
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await AuthStorage.getToken();
 
       if (token == null) {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
@@ -335,8 +331,7 @@ class ApiService {
 
     try {
       // Récupérer le token
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await AuthStorage.getToken();
 
       if (token == null) {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
@@ -403,8 +398,8 @@ class ApiService {
     final url = Uri.parse("$baseUrl/events/$id/participate");
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await AuthStorage.getToken();
+
       final response = await http.delete(
         url,
         headers: {
@@ -434,8 +429,7 @@ class ApiService {
     final url = Uri.parse("$baseUrl/badges/my-badges");
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await AuthStorage.getToken();
 
       if (token == null) {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
@@ -468,10 +462,9 @@ class ApiService {
 
   /// Récupère l'historique des quiz du user
   static Future<List<Map<String, dynamic>>> getUserQuizHistory() async {
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString("accessToken");
+    final token = await AuthStorage.getToken();
 
-  if (token == null) {
+    if (token == null) {
   throw Exception("Token manquant. Connectez-vous à nouveau.");
   }
 
@@ -510,28 +503,38 @@ class ApiService {
       "success": totalSuccess,
     };
   }
-  Future<List<BadgeProgress>> fetchBadgeProgress() async {
-    final progressResponse = await http.get(Uri.parse('$baseUrl/progression'));
-    final progressData = json.decode(progressResponse.body);
+  static Future<int> getProgression() async {
+    final url = Uri.parse("$baseUrl/progression");
 
-    final badgeResponse = await http.get(Uri.parse('$baseUrl/badges/my-badges'));
-    final badgeData = json.decode(badgeResponse.body);
+    try {
+      final token = await AuthStorage.getToken();
 
-    List<BadgeProgress> result = [];
+      if (token == null) {
+        throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
+      }
 
-    for (var badge in badgeData) {
-      String name = badge['name'];
-      String image = badge['image'];
-      int progress = progressData[name] ?? 0;
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
 
-      result.add(BadgeProgress(
-        title: name,
-        progress: progress,
-        imagePath: image,
-      ));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // ici on récupère la progression globale
+        return data['data']['overallProgress'] as int;
+      } else {
+        throw Exception(
+          "Erreur serveur: ${response.statusCode} - ${response.body}",
+        );
+      }
+    } catch (e, stackTrace) {
+      print("Erreur lors de la récupération des progressions: $e");
+      print("Stacktrace: $stackTrace");
+      throw Exception("Erreur lors de la récupération des progressions: $e");
     }
-
-    return result;
   }
 
 }

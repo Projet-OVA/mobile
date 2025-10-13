@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 
 class FilterBarCommunity extends StatefulWidget {
   final ValueChanged<int> onFilterSelected; // callback vers la page
+  final int selectedIndex;
 
-  const FilterBarCommunity({super.key, required this.onFilterSelected});
+  const FilterBarCommunity({
+    super.key,
+    required this.onFilterSelected,
+    required this.selectedIndex,
+  });
 
   @override
   State<FilterBarCommunity> createState() => _FilterBarCommunityState();
 }
 
 class _FilterBarCommunityState extends State<FilterBarCommunity> {
-  int selectedIndex = 0;
+  late int selectedIndex;
 
   final List<Map<String, dynamic>> filters = [
     {'label': 'Populaire'},
@@ -20,6 +25,23 @@ class _FilterBarCommunityState extends State<FilterBarCommunity> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.selectedIndex;
+  }
+
+  @override
+  void didUpdateWidget(covariant FilterBarCommunity oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // ✅ Si le parent change l'index (restauration), on le synchronise
+    if (oldWidget.selectedIndex != widget.selectedIndex) {
+      setState(() {
+        selectedIndex = widget.selectedIndex;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
@@ -27,17 +49,19 @@ class _FilterBarCommunityState extends State<FilterBarCommunity> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(filters.length, (index) {
           final item = filters[index];
-          return Expanded( // chaque item prend la même largeur
+          final bool isActive = selectedIndex == index;
+
+          return Expanded(
             child: GestureDetector(
               onTap: () {
                 setState(() {
                   selectedIndex = index;
                 });
-                widget.onFilterSelected(index);
+                widget.onFilterSelected(index); // ✅ appelle le callback parent
               },
               child: FilterItem(
                 label: item['label'],
-                isActive: selectedIndex == index,
+                isActive: isActive,
               ),
             ),
           );
@@ -66,18 +90,15 @@ class FilterItem extends StatelessWidget {
         color: isActive ? const Color(0xFFFFC113) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center, // centre icône + texte
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 13),
-              overflow: TextOverflow.ellipsis, // évite débordement
-            ),
+      child: Center(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            color: isActive ? Colors.black : Colors.black87,
           ),
-        ],
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

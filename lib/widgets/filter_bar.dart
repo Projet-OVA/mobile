@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 
-class FilterBar extends StatefulWidget {
-  final ValueChanged<int> onFilterSelected; // callback vers la page
+class FilterBar extends StatelessWidget {
+  final ValueChanged<int> onFilterSelected;
+  final int selectedIndex; // <-- renommé pour plus de clarté
 
-  const FilterBar({super.key, required this.onFilterSelected});
+  const FilterBar({
+    super.key,
+    required this.onFilterSelected,
+    required this.selectedIndex,
+  });
 
-  @override
-  State<FilterBar> createState() => _FilterBarState();
-}
-
-class _FilterBarState extends State<FilterBar> {
-  int selectedIndex = 0;
-
-  final List<Map<String, dynamic>> filters = [
+  final List<Map<String, dynamic>> filters = const [
     {'icon': Icons.grid_view_outlined, 'label': 'Parcours'},
     {'icon': Icons.play_circle_outline_outlined, 'label': 'Vidéo'},
     {'icon': Icons.keyboard_voice_outlined, 'label': 'Podcast'},
@@ -27,18 +25,15 @@ class _FilterBarState extends State<FilterBar> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(filters.length, (index) {
           final item = filters[index];
-          return Expanded( // chaque item prend la même largeur
+          final bool isActive = selectedIndex == index;
+
+          return Expanded(
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
-                widget.onFilterSelected(index);
-              },
+              onTap: () => onFilterSelected(index),
               child: FilterItem(
                 icon: item['icon'],
                 label: item['label'],
-                isActive: selectedIndex == index,
+                isActive: isActive,
               ),
             ),
           );
@@ -70,7 +65,7 @@ class FilterItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center, // centre icône + texte
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16),
@@ -78,8 +73,11 @@ class FilterItem extends StatelessWidget {
           Flexible(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 13),
-              overflow: TextOverflow.ellipsis, // évite débordement
+              style: TextStyle(
+                fontSize: 13,
+                color: isActive ? Colors.black : Colors.grey[800],
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

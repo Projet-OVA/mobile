@@ -31,7 +31,7 @@ class _HomeTabState extends State<HomeTab> {
   Widget _buildContent() {
     switch (selectedFilter) {
       case 0:
-        return const Parcours();
+        return Parcours();
       case 1:
         return const Video();
       case 2:

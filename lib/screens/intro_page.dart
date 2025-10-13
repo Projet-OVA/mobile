@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'presentation.dart';
+import 'package:SIRA/services/auth_storage.dart';
 
 class IntroPage extends StatefulWidget {
   const IntroPage({super.key});
@@ -12,6 +13,7 @@ class _IntroPageState extends State<IntroPage> {
   @override
   void initState() {
     super.initState();
+    AuthStorage.saveLastPath('/intro');
     Future.delayed(const Duration(seconds: 5), () {
       Navigator.pushReplacement(
         context,

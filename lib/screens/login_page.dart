@@ -1,11 +1,11 @@
+import 'package:SIRA/screens/bienvenu_page.dart';
 import 'package:SIRA/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'bienvenu_page.dart';
 import 'register_page.dart';
 import '../widgets/custom_input.dart';
 import '../services/api_service.dart';
 import 'dart:convert';
+import 'package:SIRA/services/auth_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,47 +28,44 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        print(" Login response complète: $data");
-        print(" Clés disponibles: ${data.keys}");
+        print("✅ Login response complète: $data");
 
-        // Afficher la structure pour comprendre où se trouve l'ID
-        if (data['data'] != null) {
-          print(" data.keys: ${data['data'].keys}");
-          if (data['data']['user'] != null) {
-            print(" user: ${data['data']['user']}");
-          }
+        // 🔐 1. Sauvegarde du token
+        final token = data['data']?['accessToken'] ?? data['token'];
+        if (token != null) {
+          await AuthStorage.saveToken(token);
+          print("🔑 Token sauvegardé via AuthStorage: $token");
+        } else {
+          print("⚠️ Aucun token trouvé dans la réponse");
         }
 
-        final prefs = await SharedPreferences.getInstance();
+        // ✅ 2. Marquer l’utilisateur comme connecté
+        await AuthStorage.setLoggedIn(true);
+        print("👤 Statut de connexion sauvegardé via AuthStorage");
 
-        // Sauvegarder le token
-        final token = data["data"]["accessToken"];
-        await prefs.setBool("isLoggedIn", true);
-        await prefs.setString("accessToken", token);
-        print("Token sauvegardé");
-
-        // Sauvegarder l'ID utilisateur
+        // 👤 3. Sauvegarder l’ID utilisateur
         await ApiService.saveUserIdFromLogin(data);
 
+        // 🧭 4. Sauvegarder la page actuelle
+        await AuthStorage.saveLastPath('/bienvenu');
+
+        // 🚀 5. Rediriger
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const BienvenuPage()),
         );
       } else {
-        print("Erreur login: ${response.statusCode}");
+        print("❌ Erreur login: ${response.statusCode}");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "L'email ou le mot de passe est incorrect",
-              style: TextStyle(color: Color(0xFF322F35)),
-            ),
+          const SnackBar(
+            content: Text("L'email ou le mot de passe est incorrect"),
             backgroundColor: Color(0xFFFFC113),
             duration: Duration(seconds: 3),
           ),
         );
       }
     } catch (e) {
-      print(" Erreur login: $e");
+      print("🚨 Erreur login: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Erreur de connexion: $e"),
@@ -77,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

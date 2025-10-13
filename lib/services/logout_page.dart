@@ -1,8 +1,8 @@
 import 'package:SIRA/screens/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/custom_button.dart';
 import '../services/api_service.dart';
+import '../services/auth_storage.dart'; // ✅ Import AuthStorage
 
 class LogoutPage extends StatefulWidget {
   const LogoutPage({super.key});
@@ -13,38 +13,32 @@ class LogoutPage extends StatefulWidget {
 
 class _LogoutPageState extends State<LogoutPage> {
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('accessToken') ?? "";
-
     print("=== DEBUT LOGOUT ===");
-    print("Token: ${token.isEmpty ? 'VIDE' : 'PRESENT (${token.length} caractères)'}");
 
     try {
+      // ✅ Récupérer le token via AuthStorage
+      final token = await AuthStorage.getToken() ?? "";
+      print("Token: ${token.isEmpty ? 'VIDE' : 'PRESENT (${token.length} caractères)'}");
+
       print("Appel API logout...");
       final response = await ApiService.logout(token);
 
       print("Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
-      print("Response Headers: ${response.headers}");
 
       if (response.statusCode == 200) {
         print("Logout API réussi - Suppression des données locales...");
 
-        // Vérifier ce qui est stocké avant suppression
-        final keys = prefs.getKeys();
-        print("Clés avant suppression: $keys");
-
-        await prefs.clear();
-
-        // Vérifier après suppression
-        final keysAfter = prefs.getKeys();
-        print("Clés après suppression: $keysAfter");
+        // ✅ Utiliser AuthStorage.clearAll() pour tout nettoyer
+        await AuthStorage.clearAll();
+        print("✅ Toutes les données ont été supprimées (token, lastPath, selectedTab, pageTabs...)");
 
         if (mounted) {
           print("Navigation vers LoginPage...");
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const LoginPage()),
+                (route) => false, // ✅ Supprimer toute la pile de navigation
           );
         }
       } else {
@@ -54,6 +48,7 @@ class _LogoutPageState extends State<LogoutPage> {
             SnackBar(
               content: Text("Erreur API: ${response.statusCode} - ${response.body}"),
               duration: const Duration(seconds: 5),
+              backgroundColor: Colors.red,
             ),
           );
         }
@@ -67,6 +62,7 @@ class _LogoutPageState extends State<LogoutPage> {
           SnackBar(
             content: Text("Erreur de connexion: $e"),
             duration: const Duration(seconds: 5),
+            backgroundColor: Colors.red,
           ),
         );
       }
@@ -78,16 +74,38 @@ class _LogoutPageState extends State<LogoutPage> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(
+      leading: const Icon(
         Icons.logout_outlined,
         color: Colors.red,
       ),
-      title: Text(
+      title: const Text(
         "Déconnexion",
         style: TextStyle(color: Colors.red, fontSize: 16),
       ),
       onTap: () async {
-        await logout();
+        // ✅ Optionnel : Afficher une confirmation avant de se déconnecter
+        final confirm = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Déconnexion"),
+            content: const Text("Êtes-vous sûr de vouloir vous déconnecter ?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Annuler"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text("Déconnecter"),
+              ),
+            ],
+          ),
+        );
+
+        if (confirm == true) {
+          await logout();
+        }
       },
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_button.dart';
 import 'engagement.dart';
+import 'package:SIRA/services/auth_storage.dart';
 
 class ObjectifPage extends StatefulWidget {
   const ObjectifPage({super.key});
@@ -11,6 +12,11 @@ class ObjectifPage extends StatefulWidget {
 
 class _ObjectifPageState extends State<ObjectifPage> {
   // Liste des objectifs
+  @override
+  void initState() {
+    super.initState();
+    AuthStorage.saveLastPath('/objectif');
+  }
   final List<String> objectifs = [
     "Accéder à des parcours éducatifs",
     "Créer des défis personnels",

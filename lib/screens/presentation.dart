@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_button.dart';
-import '../services/register_storage.dart'; // ✅ ajouter ton storage
+import '../services/register_storage.dart';
 import 'objectif.dart';
+import 'package:SIRA/services/auth_storage.dart';
 
-class Presentation extends StatelessWidget {
-  Presentation({super.key});
+class Presentation extends StatefulWidget {
+  const Presentation({super.key});
 
-  // ✅ Déclaration du controller
+  @override
+  State<Presentation> createState() => _PresentationState();
+}
+class _PresentationState extends State<Presentation> {
+  @override
+  void initState() {
+    super.initState();
+    AuthStorage.saveLastPath('/presentation');
+  }
+  // Déclaration du controller
   final TextEditingController usernameController = TextEditingController();
 
   @override

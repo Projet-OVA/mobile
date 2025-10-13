@@ -1,6 +1,7 @@
 import 'package:SIRA/widgets/tabs/main_layout_community.dart';
 import 'package:flutter/material.dart';
 import 'package:SIRA/widgets/custom_button.dart';
+import 'package:SIRA/services/auth_storage.dart';
 
 class PopulaireCommunity extends StatefulWidget {
   const PopulaireCommunity({super.key});
@@ -9,17 +10,75 @@ class PopulaireCommunity extends StatefulWidget {
   State<PopulaireCommunity> createState() => _PopulaireCommunityState();
 }
 
-class _PopulaireCommunityState extends State<PopulaireCommunity> {
+class _PopulaireCommunityState extends State<PopulaireCommunity> with WidgetsBindingObserver {
+  static const String pageName = 'populaire_community';
   int selectedFilter = 0;
+  late Future<List<dynamic>> futureItems;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _loadLastSelectedTab(); // restauration du dernier onglet
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// ✅ Restaure le dernier filtre enregistré
+  Future<void> _loadLastSelectedTab() async {
+    final lastTab = await AuthStorage.getPageTab(pageName);
+    if (lastTab != null) {
+      setState(() {
+        selectedFilter = lastTab;
+      });
+    }
+  }
+  /// Quand l’app passe en pause ou est fermée
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      _saveCurrentTab();
+    }
+  }
+
+  /// ✅ Sauvegarde du filtre et du chemin actuel
+  Future<void> _saveCurrentTab() async {
+    await AuthStorage.savePageTab(pageName, selectedFilter);
+    switch (selectedFilter) {
+      case 1:
+        await AuthStorage.saveLastPath('/populaire_community');
+        break;
+      case 2:
+        await AuthStorage.saveLastPath('/mesPostes');
+        break;
+      case 3:
+        await AuthStorage.saveLastPath('/forum');
+        break;
+      default:
+        await AuthStorage.saveLastPath('/enregistrer');
+    }
+  }
+
+  /// Sélection d’un filtre
+  Future<void> _onFilterSelected(int index) async {
+    setState(() {
+      selectedFilter = index;
+    });
+    await AuthStorage.savePageTab(pageName, index);
+    await _saveCurrentTab();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MainLayoutCommunity(
-      onFilterSelected: (index) {
-        setState(() {
-          selectedFilter = index;
-        });
-      },
+      selectedIndex: selectedFilter,
+      onFilterSelected: _onFilterSelected,
       child: _buildContent(),
     );
   }

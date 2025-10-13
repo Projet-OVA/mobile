@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 
 class FilterBar extends StatefulWidget {
   final ValueChanged<int> onFilterSelected; // callback vers la page
+  final int selectedIndex; // ✅ ajouté
 
-  const FilterBar({super.key, required this.onFilterSelected});
+  const FilterBar({
+    super.key,
+    required this.onFilterSelected,
+    this.selectedIndex = 0, // ✅ valeur par défaut
+  });
 
   @override
   State<FilterBar> createState() => _FilterBarState();
 }
 
 class _FilterBarState extends State<FilterBar> {
-  int selectedIndex = 0;
+  late int selectedIndex;
 
   final List<Map<String, dynamic>> filters = [
     {'label': 'Populaires'},
@@ -20,6 +25,23 @@ class _FilterBarState extends State<FilterBar> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.selectedIndex; // ✅ on initialise à la valeur reçue
+  }
+
+  @override
+  void didUpdateWidget(covariant FilterBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // ✅ si le parent met à jour l’index, on met à jour l’état interne
+    if (oldWidget.selectedIndex != widget.selectedIndex) {
+      setState(() {
+        selectedIndex = widget.selectedIndex;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
@@ -27,7 +49,7 @@ class _FilterBarState extends State<FilterBar> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(filters.length, (index) {
           final item = filters[index];
-          return Expanded( // chaque item prend la même largeur
+          return Expanded(
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -66,18 +88,15 @@ class FilterItem extends StatelessWidget {
         color: isActive ? const Color(0xFFFFC113) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center, // centre icône + texte
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 13),
-              overflow: TextOverflow.ellipsis, // évite débordement
-            ),
+      child: Center(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            color: isActive ? Colors.black : Colors.black87,
           ),
-        ],
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

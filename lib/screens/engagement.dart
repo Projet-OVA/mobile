@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import 'package:SIRA/services/auth_storage.dart';
 
 class EngagementPage extends StatefulWidget {
   const EngagementPage({super.key});
@@ -8,7 +9,12 @@ class EngagementPage extends StatefulWidget {
   State<EngagementPage> createState() => _EngagementPageState();
 }
 
-class _EngagementPageState extends State<EngagementPage> {
+class _EngagementPageState extends State<EngagementPage> { @override
+void initState() {
+  super.initState();
+  AuthStorage.saveLastPath('/engagement');
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

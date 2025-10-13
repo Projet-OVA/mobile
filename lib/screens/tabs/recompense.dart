@@ -13,11 +13,19 @@ class Recompense extends StatefulWidget {
 
 class _RecompenseState extends State<Recompense> {
   late Future<List<dynamic>> userBadges;
+  late Future<int> futureProgression;
 
   @override
   void initState() {
     super.initState();
     userBadges = ApiService.getMyBadges();
+    futureProgression = ApiService.getProgression();
+  }
+
+  String getBadgeTitle(int progress) {
+    if (progress == 100) return "ANKH";
+    if (progress >= 50) return "NDORTE";
+    return "DJED";
   }
 
   @override
@@ -28,7 +36,7 @@ class _RecompenseState extends State<Recompense> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // FutureBuilder pour le carrousel
+              // Carrousel des badges
               FutureBuilder<List<dynamic>>(
                 future: userBadges,
                 builder: (context, snapshot) {
@@ -57,7 +65,6 @@ class _RecompenseState extends State<Recompense> {
                     );
                   }
 
-                  // Création des cartes à partir des données
                   final items = snapshot.data!;
                   final cards = items.map((e) {
                     return CertificationCard(
@@ -66,7 +73,6 @@ class _RecompenseState extends State<Recompense> {
                     );
                   }).toList();
 
-                  // Carrousel
                   return Container(
                     margin: const EdgeInsets.only(left: 20),
                     child: CarouselSlider(
@@ -96,21 +102,32 @@ class _RecompenseState extends State<Recompense> {
               ),
 
               const SizedBox(height: 20),
-              // Progress bar
-              const ProgressWidget(
-                title: "Ndorte",
-                progress: 100,
-                imagePath: 'assets/images/medaille.png',
-              ),
-              const ProgressWidget(
-                title: "Djed",
-                progress: 50,
-                imagePath: 'assets/images/medaille.png',
-              ),
-              const ProgressWidget(
-                title: "Ankh",
-                progress: 5,
-                imagePath: 'assets/images/medaille.png',
+
+              // Progression utilisateur
+              FutureBuilder<int>(
+                future: futureProgression,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator(color: Color(0xFFFFC113));
+                  }
+
+                  if (snapshot.hasError) {
+                    return Text("Erreur: ${snapshot.error}");
+                  }
+
+                  if (!snapshot.hasData) {
+                    return const Text("Pas de progression");
+                  }
+
+                  final progress = snapshot.data!;
+                  final badgeTitle = getBadgeTitle(progress);
+
+                  return ProgressWidget(
+                    title: badgeTitle,
+                    progress: progress.toDouble(),
+                    imagePath: "assets/images/medaille.png",
+                  );
+                },
               ),
             ],
           ),

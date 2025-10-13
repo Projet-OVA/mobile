@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../widgets/custom_tab_bar.dart'; // ton tab bar
+import '../widgets/custom_tab_bar.dart';
+import 'package:SIRA/services/auth_storage.dart';
 
 class BienvenuPage extends StatefulWidget {
   const BienvenuPage({super.key});
@@ -18,7 +19,7 @@ class _BienvenuPageState extends State<BienvenuPage>
   @override
   void initState() {
     super.initState();
-
+    AuthStorage.saveLastPath('/bienvenu');
     // Animation fade in/out
     _controller = AnimationController(
       vsync: this,

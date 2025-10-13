@@ -1,5 +1,3 @@
-// screens/tabs/parcours.dart
-
 import 'package:flutter/material.dart';
 import '../../widgets/tabs/main_layout.dart';
 import '../../services/course_service.dart';
@@ -8,6 +6,7 @@ import '../../widgets/course_carousel.dart';
 import 'video.dart';
 import 'podcast.dart';
 import 'article.dart';
+import 'package:SIRA/services/auth_storage.dart';
 
 class Parcours extends StatefulWidget {
   const Parcours({super.key});
@@ -16,8 +15,10 @@ class Parcours extends StatefulWidget {
   State<Parcours> createState() => _ParcoursState();
 }
 
-class _ParcoursState extends State<Parcours> {
+class _ParcoursState extends State<Parcours> with WidgetsBindingObserver{
+  static const String pageName = 'parcours';
   int selectedFilter = 0;
+
   Map<String, List<Course>> coursesByCategory = {};
   bool isLoading = false;
   String? errorMessage;
@@ -25,7 +26,48 @@ class _ParcoursState extends State<Parcours> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
+    _loadLastSelectedTab();
     _loadCourses();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      AuthStorage.savePageTab(pageName, selectedFilter);
+
+      switch (selectedFilter) {
+        case 1:
+          AuthStorage.saveLastPath('/video');
+          break;
+        case 2:
+          AuthStorage.saveLastPath('/podcast');
+          break;
+        case 3:
+          AuthStorage.saveLastPath('/article');
+          break;
+        default:
+          AuthStorage.saveLastPath('/profile');
+      }
+    }
+  }
+
+  Future<void> _loadLastSelectedTab() async {
+    final lastTab = await AuthStorage.getPageTab(pageName);
+    if (lastTab != null) {
+      setState(() {
+        selectedFilter = lastTab;
+      });
+    }
   }
 
   /// Charger les parcours depuis l'API
@@ -53,10 +95,23 @@ class _ParcoursState extends State<Parcours> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      onFilterSelected: (index) {
+      selectedIndex: selectedFilter, // ✅ AJOUTÉ : passer l'index actuel
+      onFilterSelected: (index) async {
         setState(() {
           selectedFilter = index;
         });
+        await AuthStorage.savePageTab(pageName, index);
+
+        //Sauvegarder le lastPath correspondant
+        if (index == 1) {
+          await AuthStorage.saveLastPath('/video');
+        } else if (index == 2){
+          await AuthStorage.saveLastPath('/podcast');
+        }else if (index == 3){
+        await AuthStorage.saveLastPath('/article');
+        } else {
+        await AuthStorage.saveLastPath('/homePage');
+        }
       },
       child: _buildContent(),
     );
@@ -82,7 +137,7 @@ class _ParcoursState extends State<Parcours> {
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF322F35)),
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFC113)),
         ),
       );
     }
