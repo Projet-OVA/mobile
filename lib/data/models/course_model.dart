@@ -73,14 +73,15 @@ class Course {
   }
 
   // Méthode pour obtenir le nom de la catégorie en français
+  // Méthode pour obtenir le nom de la catégorie en français
   String getCategoryName() {
     switch (category) {
-      case 'DROIT_DU_CITOYEN':
-        return 'Droits du Citoyen';
-      case 'DEVOIR_DU_CITOYEN':
-        return 'Devoirs du Citoyen';
-      case 'ENVIRONNEMENT':
-        return 'Environnement';
+      case 'ENVIRONNEMENT_ET_DEVELOPPEMENT_DURABILITE':
+        return 'Environnement et Développement Durable';
+      case 'FONDOMENTAUX_DE_LA_CITOYENNET_ACTIVITE':
+        return 'Fondomentaux de la Citoyenneté  Active';
+      case 'CITOYENNETE_NUMERIQUE_ET_MEDIA':
+        return 'Citoyenneté Numérique et Média';
       default:
         return 'Autre';
     }
