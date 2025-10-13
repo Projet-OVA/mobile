@@ -1,5 +1,3 @@
-// screens/tabs/parcours.dart
-
 import 'package:flutter/material.dart';
 import '../../widgets/tabs/main_layout.dart';
 import '../../services/course_service.dart';
