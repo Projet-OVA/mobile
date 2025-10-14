@@ -359,7 +359,7 @@ class _DetailPopulairePageState extends State<DetailPopulairePage> {
 
                   // Bouton "Participer" à droite
                   SizedBox(
-                    width: 350, // largeur fixe pour que ça reste propre
+                    width: 260, // largeur fixe pour que ça reste propre
                     child: CustomButton(
                       text: isParticipating ? "Se désinscrire" : "Participer",
                       onPressed: isLoading
