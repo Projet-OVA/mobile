@@ -153,6 +153,8 @@ class _PopulaireCommunityState extends State<PopulaireCommunity> with WidgetsBin
                 text: 'Nouveau Poste',
                 borderRadius: 24,
                 icon: Icons.edit_note_outlined,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                boxShadow: [],
                 onPressed: () async {},
               ),
             ),

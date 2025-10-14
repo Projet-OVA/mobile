@@ -208,7 +208,7 @@ class _MesDefisCreesState extends State<MesDefisCrees> {
             ),
             // Bouton fixe en bas avec padding approprié
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
               child: SafeArea(
                 top: false,
                 child: SizedBox(
@@ -217,6 +217,8 @@ class _MesDefisCreesState extends State<MesDefisCrees> {
                     text: 'Nouveau Défi',
                     borderRadius: 24,
                     icon: Icons.edit_note_outlined,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    boxShadow: [],
                     onPressed: () async {
                       final result = await Navigator.push<bool>(
                         context,

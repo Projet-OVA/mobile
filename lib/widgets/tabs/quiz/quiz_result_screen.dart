@@ -1,12 +1,10 @@
-// screens/tabs/quiz/quiz_result_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
 import '../../../data/models/quiz_model.dart';
 import '../../../widgets/custom_button.dart';
 
 class QuizResultScreen extends StatefulWidget {
-  final QuizResult result;
+  final QuizResult? result;
 
   const QuizResultScreen({super.key, required this.result});
 
@@ -22,8 +20,8 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
     super.initState();
     _confettiController = ConfettiController(duration: const Duration(seconds: 5));
 
-    // Déclencher les confettis immédiatement si le quiz est réussi
-    if (widget.result.scorePercentage >= 50) {
+    // ✅ Vérification null avant d'accéder à scorePercentage
+    if (widget.result != null && widget.result!.scorePercentage >= 50) {
       // Déclencher immédiatement après le build
       Future.microtask(() {
         if (mounted) {
@@ -41,7 +39,39 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isPassed = widget.result.scorePercentage >= 50;
+    // ✅ Gestion du cas où result est null
+    if (widget.result == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                const SizedBox(height: 16),
+                const Text(
+                  'Erreur de chargement des résultats',
+                  style: TextStyle(fontSize: 18, color: Colors.black87),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                CustomButton(
+                  text: 'Retour aux parcours',
+                  onPressed: () async {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // ✅ À partir d'ici, result n'est plus null
+    final result = widget.result!;
+    final isPassed = result.scorePercentage >= 50;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -106,7 +136,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                             child: Column(
                               children: [
                                 Text(
-                                  '${widget.result.scorePercentage}%',
+                                  '${result.scorePercentage}%',
                                   style: const TextStyle(
                                     fontSize: 56,
                                     fontWeight: FontWeight.bold,
@@ -145,19 +175,19 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                               children: [
                                 _buildStatRow(
                                   'Questions totales',
-                                  '${widget.result.totalQuestions}',
+                                  '${result.totalQuestions}',
                                   Icons.quiz,
                                 ),
                                 const Divider(height: 24),
                                 _buildStatRow(
                                   'Réponses correctes',
-                                  '${widget.result.correctAnswers}',
+                                  '${result.correctAnswers}',
                                   Icons.check_circle_outline,
                                 ),
                                 const Divider(height: 24),
                                 _buildStatRow(
                                   'Réponses incorrectes',
-                                  '${widget.result.totalQuestions - widget.result.correctAnswers}',
+                                  '${result.totalQuestions - result.correctAnswers}',
                                   Icons.cancel_outlined,
                                 ),
                               ],

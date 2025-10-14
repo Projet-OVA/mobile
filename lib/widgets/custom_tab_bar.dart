@@ -95,8 +95,8 @@ class _CustomTabBarState extends State<CustomTabBar> with WidgetsBindingObserver
                       const SizedBox(height: 6),
                       if (index == 0)
                         CircleAvatar(
-                          radius: 16,
-                          backgroundImage: const AssetImage('assets/images/profile.png'),
+                          radius: 11,
+                          backgroundImage: const AssetImage('assets/images/cardProfile.png'),
                         )
                       else
                         Icon(

@@ -158,13 +158,9 @@ class _DetailPopulairePageState extends State<DetailPopulairePage> {
                             // Participants
                             CardProfiles(
                               profileImages: const [
-                                'assets/images/profile4.png',
-                                'assets/images/profile3.png',
-                                'assets/images/profile2.png',
-                                'assets/images/profile1.png',
-                                'assets/images/profile4.png'
+                                'assets/images/cardProfile.png',
                               ],
-                              totalParticipants: event['participantsCount'] ?? 0,
+                              totalParticipants: event['participantsCount'],
                             ),
                             const SizedBox(height: 16),
 

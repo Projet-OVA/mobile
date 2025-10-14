@@ -116,10 +116,10 @@ class _ObjectifPageState extends State<ObjectifPage> {
             CustomButton(
               text: "Suivant",
               onPressed: () async {
-                // Exemple : action asynchrone
-                await Future.delayed(const Duration(seconds: 2));
-                // Navigation ou autre action après chargement
-                print("Action terminée");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EngagementPage()),
+                );
               },
             ),
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:SIRA/services/event_provider.dart';
 import 'package:SIRA/screens/tabs/detail_populaire_page.dart';
+import 'package:SIRA/widgets/card_profiles.dart';
 
 class CardPopulaire extends StatelessWidget {
   final String eventId;
@@ -128,34 +129,12 @@ class CardPopulaire extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(children: [
-                            SizedBox(
-                              width: 50,
-                              height: 24,
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Positioned(left: 0, child: _circle(Colors.green)),
-                                  Positioned(left: 13, child: _circle(Colors.red)),
-                                  Positioned(
-                                    left: 26,
-                                    child: _circle(const Color(0xFFFFC113)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 2),
-                            Text(
-                              participants == 0 || participants == 1
-                                  ? '$participants participant'
-                                  : '+ $participants participants',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ]),
+                          CardProfiles(
+                            profileImages: const [
+                              'assets/images/cardProfile.png',
+                            ],
+                            totalParticipants: participants,
+                          ),
                           ElevatedButton(
                             onPressed: isLoading
                                 ? null

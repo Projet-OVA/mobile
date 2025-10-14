@@ -9,6 +9,8 @@ import 'package:SIRA/utils/event_sort_utils.dart';
 import 'package:SIRA/utils/date_format_utils.dart';
 import 'package:SIRA/services/auth_storage.dart';
 import '../../../widgets/tabs/main_layout_defi.dart';
+import '../../widgets/custom_button.dart';
+import '../tabs/ajout_defi.dart';
 
 class Populaire extends StatefulWidget {
   const Populaire({super.key});
@@ -18,7 +20,7 @@ class Populaire extends StatefulWidget {
 }
 
 class _PopulaireState extends State<Populaire> with WidgetsBindingObserver {
-  static const String pageName = 'defi_page'; // ✅ identifiant unique pour cette page
+  static const String pageName = 'defi_page';
   int selectedFilter = 0;
   late Future<List<dynamic>> futureItems;
 
@@ -27,7 +29,7 @@ class _PopulaireState extends State<Populaire> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     futureItems = ApiService.getEvents();
-    _loadLastSelectedTab(); // ✅ restauration du dernier onglet
+    _loadLastSelectedTab();
   }
 
   @override
@@ -36,7 +38,6 @@ class _PopulaireState extends State<Populaire> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  /// ✅ Restaure le dernier filtre enregistré
   Future<void> _loadLastSelectedTab() async {
     final lastTab = await AuthStorage.getPageTab(pageName);
     if (lastTab != null) {
@@ -45,7 +46,7 @@ class _PopulaireState extends State<Populaire> with WidgetsBindingObserver {
       });
     }
   }
-  /// Quand l’app passe en pause ou est fermée
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -55,7 +56,6 @@ class _PopulaireState extends State<Populaire> with WidgetsBindingObserver {
     }
   }
 
-  /// ✅ Sauvegarde du filtre et du chemin actuel
   Future<void> _saveCurrentTab() async {
     await AuthStorage.savePageTab(pageName, selectedFilter);
     switch (selectedFilter) {
@@ -73,13 +73,18 @@ class _PopulaireState extends State<Populaire> with WidgetsBindingObserver {
     }
   }
 
-  /// Sélection d’un filtre
   Future<void> _onFilterSelected(int index) async {
     setState(() {
       selectedFilter = index;
     });
     await AuthStorage.savePageTab(pageName, index);
     await _saveCurrentTab();
+  }
+
+  void _refreshData() {
+    setState(() {
+      futureItems = ApiService.getEvents();
+    });
   }
 
   @override
@@ -91,7 +96,6 @@ class _PopulaireState extends State<Populaire> with WidgetsBindingObserver {
     );
   }
 
-  /// ✅ Contenu dynamique selon le filtre
   Widget _buildContent() {
     switch (selectedFilter) {
       case 0:
@@ -112,81 +116,110 @@ class _PopulaireState extends State<Populaire> with WidgetsBindingObserver {
       future: futureItems,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
-            height: 370,
-            child: Center(
-              child: CircularProgressIndicator(color: Color(0xFFFFC113)),
-            ),
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFFFFC113)),
           );
         }
 
         if (snapshot.hasError) {
-          return SizedBox(
-            height: 370,
-            child: Center(
-              child: Text('Erreur: ${snapshot.error}'),
-            ),
+          return Center(
+            child: Text('Erreur: ${snapshot.error}'),
           );
         }
 
         final rawItems = snapshot.data ?? [];
         if (rawItems.isEmpty) {
-          return const SizedBox(
-            height: 370,
-            child: Center(child: Text('Aucun événement disponible')),
-          );
+          return const Center(child: Text('Aucun événement disponible'));
         }
 
         final items = EventSortUtils.sortByUpcoming(rawItems);
 
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final e = items[index];
-            final formattedDate =
-            DateFormatUtils.formatDateFull(e['eventDate']);
+        return Column(
+          children: [
+            // Liste des événements
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final e = items[index];
+                  final formattedDate =
+                  DateFormatUtils.formatDateFull(e['eventDate']);
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (index == 0) ...[
-                  const Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Text(
-                      'Défis Populaires',
-                      style: TextStyle(
-                        color: Color(0xFF1C1C1C),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (index == 0) ...[
+                        const Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            'Défis Populaires',
+                            style: TextStyle(
+                              color: Color(0xFF1C1C1C),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 19),
+                        const PopulaireCarousel(),
+                        const SizedBox(height: 16),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            'Environnement',
+                            style: TextStyle(
+                              color: Color(0xFF1C1C1C),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                      EnvironnementCard(
+                        eventId: e['id'].toString(),
+                        imageAsset:
+                        e['image'] ?? 'assets/images/reboisement.png',
+                        title: e['eventName'] ?? 'Sans titre',
+                        date: formattedDate,
+                        location: e['location'] ?? 'Localisation inconnue',
                       ),
-                    ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            // Bouton Nouveau Défi
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: CustomButton(
+                    text: 'Nouveau Défi',
+                    borderRadius: 24,
+                    icon: Icons.edit_note_outlined,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    boxShadow: [],
+                    onPressed: () async {
+                      final result = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AjoutDefi(),
+                        ),
+                      );
+
+                      // Recharger les données si un nouveau défi a été créé
+                      if (result == true && mounted) {
+                        _refreshData();
+                      }
+                    },
                   ),
-                  const SizedBox(height: 19),
-                  const PopulaireCarousel(),
-                  const SizedBox(height: 16),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Text(
-                      'Environnement',
-                      style: TextStyle(
-                        color: Color(0xFF1C1C1C),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-                EnvironnementCard(
-                  eventId: e['id'].toString(),
-                  imageAsset: e['image'] ?? 'assets/images/reboisement.png',
-                  title: e['eventName'] ?? 'Sans titre',
-                  date: formattedDate,
-                  location: e['location'] ?? 'Localisation inconnue',
                 ),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
         );
       },
     );

@@ -21,7 +21,7 @@ class _BannerProfileState extends State<BannerProfile> {
 
   Future<void> _loadUser() async {
     try {
-      final userId = await ApiService.getUserId();
+      final userId = await ApiService.getCurrentUser();
       if (userId == null) {
         throw Exception("Aucun utilisateur trouvé");
       }
@@ -37,46 +37,51 @@ class _BannerProfileState extends State<BannerProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: userDetail,
-      builder: (context, snapshotUser) {
-        final size = MediaQuery.of(context).size;
-        final isTablet = size.width > 600;
+    final size = MediaQuery.of(context).size;
+    final isTablet = size.width > 600;
 
-        if (snapshotUser.connectionState == ConnectionState.waiting) {
-          return _buildLoadingContainer(isTablet);
-        }
+    return Container(
+      width: double.infinity,
+      height: isTablet ? 280 : 250,
+      decoration: const BoxDecoration(
+        color: Color(0xFFFFC107),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(300),
+          bottomRight: Radius.circular(300),
+        ),
+      ),
+      child: Stack(
+        children: [
+          // Contenu principal du profil
+          Center(
+            child: FutureBuilder<Map<String, dynamic>>(
+              future: userDetail,
+              builder: (context, snapshotUser) {
+                if (snapshotUser.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(color: Color(0xFF322F35));
+                }
 
-        if (snapshotUser.hasError || snapshotUser.data == null) {
-          return _buildErrorContainer(isTablet, snapshotUser.error.toString());
-        }
+                if (snapshotUser.hasError || snapshotUser.data == null) {
+                  return const Text(
+                    "Erreur de chargement",
+                    style: TextStyle(color: Color(0xFF322F35)),
+                  );
+                }
 
-        final user = snapshotUser.data!;
-        final prenom = user['prenom'] ?? "Inconnu";
-        final nom = user['nom'] ?? "";
+                final user = snapshotUser.data!;
+                final prenom = user['prenom'] ?? "Inconnu";
+                final nom = user['nom'] ?? "";
 
-        return Container(
-          width: double.infinity,
-          height: isTablet ? 280 : 250,
-          decoration: const BoxDecoration(
-            color: Color(0xFFFFC107),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(300),
-              bottomRight: Radius.circular(300),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 18),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Spacer(),
-                Column(
+                return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage("assets/images/cardProfile.png"),
+                      radius: 22,
+                      backgroundColor: Colors.white,
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundImage: AssetImage("assets/images/cardProfile.png"),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Text(
@@ -87,8 +92,7 @@ class _BannerProfileState extends State<BannerProfile> {
                         color: Color(0xFF322F35),
                       ),
                     ),
-
-                    // 🔥 FutureBuilder pour afficher les badges
+                    const SizedBox(height: 4),
                     FutureBuilder<List<dynamic>>(
                       future: userBadges,
                       builder: (context, snapshotBadges) {
@@ -103,7 +107,7 @@ class _BannerProfileState extends State<BannerProfile> {
                           return const Text("Aucun badge attribué");
                         }
                         return Text(
-                          "Badge : ${badges.isNotEmpty ? (badges.last['name'] ?? badges.last.toString()) : "Aucun"}",
+                          "Badge : ${badges.last['name'] ?? 'Inconnu'}",
                           style: const TextStyle(
                             fontSize: 14,
                             color: Color(0xFF322F35),
@@ -112,54 +116,31 @@ class _BannerProfileState extends State<BannerProfile> {
                       },
                     ),
                   ],
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Settings()),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.settings_outlined,
-                    color: Color(0xFF322F35),
-                    size: 22,
-                  ),
-                )
-              ],
+                );
+              },
             ),
           ),
-        );
-      },
+
+          // 🔥 Bouton Settings sorti du FutureBuilder
+          Positioned(
+            right: 20,
+            top: 40,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Settings()),
+                );
+              },
+              child: const Icon(
+                Icons.settings_outlined,
+                color: Color(0xFF322F35),
+                size: 26,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
-
-  Widget _buildLoadingContainer(bool isTablet) => Container(
-    width: double.infinity,
-    height: isTablet ? 280 : 250,
-    decoration: const BoxDecoration(
-      color: Color(0xFFFFC107),
-      borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(300),
-        bottomRight: Radius.circular(300),
-      ),
-    ),
-    child: const Center(child: CircularProgressIndicator(color: Color(0xFF322F35))),
-  );
-
-  Widget _buildErrorContainer(bool isTablet, String error) => Container(
-    width: double.infinity,
-    height: isTablet ? 280 : 250,
-    decoration: const BoxDecoration(
-      color: Color(0xFFFFC107),
-      borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(300),
-        bottomRight: Radius.circular(300),
-      ),
-    ),
-    child: Center(
-      child: Text("Erreur: $error", style: const TextStyle(color: Color(0xFF322F35))),
-    ),
-  );
 }

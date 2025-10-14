@@ -7,6 +7,10 @@ class CustomButton extends StatefulWidget {
   final IconData? icon;
   final double? width;
 
+  // ✨ Nouveaux paramètres pour padding et boxShadow
+  final EdgeInsetsGeometry padding;
+  final List<BoxShadow>? boxShadow;
+
   const CustomButton({
     super.key,
     this.text,
@@ -14,6 +18,8 @@ class CustomButton extends StatefulWidget {
     this.borderRadius = 12,
     this.icon,
     this.width,
+    this.padding = const EdgeInsets.symmetric(vertical: 16),
+    this.boxShadow,
   });
 
   @override
@@ -44,14 +50,15 @@ class _CustomButtonState extends State<CustomButton> {
         width: widget.width ?? double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0xFFE6AE11), // 👈 Couleur de l'ombre solid
-              offset: Offset(0, 6), // 👈 Décalage de 6px vers le bas
-              blurRadius: 0, // 👈 0 = shadow solid (pas de flou)
-              spreadRadius: 0,
-            ),
-          ],
+          boxShadow: widget.boxShadow ??
+              const [
+                BoxShadow(
+                  color: Color(0xFFE6AE11),
+                  offset: Offset(0, 6),
+                  blurRadius: 0,
+                  spreadRadius: 0,
+                ),
+              ],
         ),
         child: ElevatedButton(
           onPressed: _handlePress,
@@ -64,12 +71,12 @@ class _CustomButtonState extends State<CustomButton> {
                 return const Color(0xFFFFC113); // couleur bouton actif
               },
             ),
-            elevation: MaterialStateProperty.all<double>(0), // 👈 Important: 0 car on gère l'ombre avec Container
+            elevation: MaterialStateProperty.all<double>(0), // 0 car ombre gérée par Container
             shadowColor: MaterialStateProperty.all<Color>(Colors.transparent),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
             overlayColor: MaterialStateProperty.all(Colors.transparent),
             padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(vertical: 16),
+              widget.padding as EdgeInsets, // utilise le padding passé ou défaut
             ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -91,7 +98,7 @@ class _CustomButtonState extends State<CustomButton> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (widget.icon != null) ...[
-                Icon(widget.icon, size: 30, color: const Color(0xFF322F35)),
+                Icon(widget.icon, size: 23, color: const Color(0xFF322F35)),
                 const SizedBox(width: 7),
               ],
               Text(

@@ -1,7 +1,7 @@
-import 'package:SIRA/widgets/custom_tab_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:SIRA/widgets/custom_tab_bar.dart';
 import 'package:SIRA/screens/login_page.dart';
 import 'package:SIRA/screens/bienvenu_page.dart';
 import 'package:SIRA/screens/intro_page.dart';
@@ -10,6 +10,10 @@ import 'package:SIRA/screens/objectif.dart';
 import 'package:SIRA/screens/engagement.dart';
 import 'package:SIRA/services/event_provider.dart';
 import 'package:SIRA/services/auth_storage.dart';
+import 'package:SIRA/services/api_service.dart';
+import 'package:SIRA/widgets/tabs/quiz/question.dart';
+import 'package:SIRA/widgets/tabs/quiz/quiz_result_screen.dart';
+import 'package:SIRA/services/http_interceptor.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
@@ -21,33 +25,48 @@ void main() async {
   final String? lastPath = await AuthStorage.getLastPath();
   final int? selectedTab = await AuthStorage.getSelectedTab();
 
-  // ✅ Récupérer tous les états des tabs internes
+  // ✅ Récupération des onglets internes
   final Map<String, int?> pageTabsState = {
     'profile': await AuthStorage.getPageTab('profile'),
     'defi': await AuthStorage.getPageTab('defi'),
     'community': await AuthStorage.getPageTab('community'),
     'parcours': await AuthStorage.getPageTab('parcours'),
-    // Ajoutez d'autres pages ici si nécessaire
   };
+
+  // ✅ Récupération de la progression du quiz
+  final Map<String, dynamic>? quizProgress = await AuthStorage.getQuizProgress();
+
+  // Debug logs
+  print('🔍 isLoggedIn: $isLoggedIn');
+  print('🔍 token: ${token != null ? "exists" : "null"}');
+  print('🔍 lastPath: $lastPath');
+  print('🔍 quizProgress: $quizProgress');
 
   Widget startScreen;
 
+  // ✅ Vérification proactive de la validité du token
   if (isLoggedIn && token != null && token.isNotEmpty) {
-    // ✅ L'utilisateur est connecté
-    if (lastPath != null && lastPath.isNotEmpty) {
-      // 🧭 Il a quitté sur une page spécifique → reprendre là
-      startScreen = getScreenFromPath(lastPath, selectedTab, pageTabsState);
+    print('🔐 Vérification de la validité du token...');
+
+    bool tokenIsValid = await _validateToken();
+
+    if (tokenIsValid) {
+      print('✅ Token valide, navigation vers lastPath ou home');
+      if (lastPath != null && lastPath.isNotEmpty) {
+        print('🔍 Navigating to: $lastPath');
+        startScreen = getScreenFromPath(lastPath, selectedTab, pageTabsState, quizProgress);
+      } else {
+        startScreen = CustomTabBar(pageTabsState: pageTabsState);
+      }
     } else {
-      // 🚀 Pas de dernière page connue → aller à la page d'accueil avec les états sauvegardés
-      startScreen = CustomTabBar(
-        pageTabsState: pageTabsState,
-      );
+      print('❌ Token invalide ou expiré, redirection vers login');
+      // Nettoyer les données si le token est invalide
+      await AuthStorage.clearAll();
+      startScreen = const LoginPage();
     }
   } else if (!isLoggedIn && token == null) {
-    // 🟡 L'utilisateur n'est pas connecté → aller à la page de login
     startScreen = const LoginPage();
   } else {
-    // 🔵 Nouvel utilisateur (n'a jamais ouvert l'app)
     startScreen = const IntroPage();
   }
 
@@ -61,6 +80,18 @@ void main() async {
   );
 }
 
+/// ✅ Valide le token en faisant un appel API simple
+Future<bool> _validateToken() async {
+  try {
+    // Tenter de récupérer l'utilisateur courant
+    await ApiService.getCurrentUser();
+    return true; // Token valide
+  } catch (e) {
+    print('⚠️ Erreur de validation du token: $e');
+    return false; // Token invalide
+  }
+}
+
 class MyApp extends StatelessWidget {
   final Widget startScreen;
   const MyApp({super.key, required this.startScreen});
@@ -68,20 +99,43 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'SIRA',
+      debugShowCheckedModeBanner: false,
+
+      // ⚠️ IMPORTANT : navigatorKey pour la gestion automatique du 401
+      navigatorKey: HttpInterceptor.navigatorKey,
+
       theme: ThemeData(
         textTheme: GoogleFonts.outfitTextTheme(),
       ),
       navigatorObservers: [routeObserver],
       home: startScreen,
+
+      // ✅ Routes nommées (ajout de /login pour la redirection 401)
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/home': (context) => CustomTabBar(pageTabsState: const {}),
+        '/quiz': (context) => const QuizQuestionScreen(
+          quizId: 'default-id',
+          quizTitle: 'Quiz par défaut',
+        ),
+        '/quizResult': (context) => QuizResultScreen(
+          result: null,
+        ),
+      },
     );
   }
 }
 
-Widget getScreenFromPath(String path, int? selectedTab, Map<String, int?> pageTabsState) {
+/// ✅ Gestion de la reprise selon la dernière page (avec quiz progress)
+Widget getScreenFromPath(
+    String path,
+    int? selectedTab,
+    Map<String, int?> pageTabsState,
+    Map<String, dynamic>? quizProgress,
+    ) {
   switch (path) {
-  // Pages d'onboarding/authentification (SANS CustomTabBar)
+  // Pages d'onboarding/authentification
     case '/bienvenu':
       return const BienvenuPage();
     case '/presentation':
@@ -95,15 +149,39 @@ Widget getScreenFromPath(String path, int? selectedTab, Map<String, int?> pageTa
     case '/login':
       return const LoginPage();
 
-  // Pages principales (AVEC CustomTabBar et menu du bas)
+  // ✅ Page du quiz avec reprise de la progression
+    case '/quiz':
+      print('🔍 Quiz case - quizProgress: $quizProgress');
+      if (quizProgress != null &&
+          quizProgress.containsKey('quizId') &&
+          quizProgress.containsKey('currentQuestionIndex')) {
+        final quizId = quizProgress['quizId'] as String;
+        final quizTitle = quizProgress['quizTitle'] as String? ?? 'Quiz';
+        final questionIndex = quizProgress['currentQuestionIndex'] as int;
+
+        print('✅ Restoring quiz:');
+        print('   - Quiz ID: $quizId');
+        print('   - Title: $quizTitle');
+        print('   - Question index: $questionIndex');
+
+        return QuizQuestionScreen(
+          quizId: quizId,
+          quizTitle: quizTitle,
+          resumeFromIndex: questionIndex,
+        );
+      }
+      print('⚠️ No valid quiz progress found, starting default quiz');
+      return const QuizQuestionScreen(
+        quizId: 'default-id',
+        quizTitle: 'Quiz Environnement',
+      );
+
+  // Pages principales avec barre de navigation
     case '/community':
     case '/defi':
     case '/homePage':
     case '/profile':
     case '/recompense':
-      return CustomTabBar(
-        pageTabsState: pageTabsState,
-      );
     case '/video':
     case '/podcast':
     case '/article':
@@ -114,13 +192,9 @@ Widget getScreenFromPath(String path, int? selectedTab, Map<String, int?> pageTa
     case '/mesPostes':
     case '/forum':
     case '/enregistrer':
-      return CustomTabBar(
-        pageTabsState: pageTabsState,
-      );
+      return CustomTabBar(pageTabsState: pageTabsState);
 
     default:
-      return CustomTabBar(
-        pageTabsState: pageTabsState,
-      );
+      return CustomTabBar(pageTabsState: pageTabsState);
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:SIRA/services/auth_storage.dart';
+import 'package:SIRA/services/http_interceptor.dart';
 
 class ApiService {
   static const String baseUrl = "https://sira-backendv1.onrender.com/api";
@@ -98,7 +99,7 @@ class ApiService {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
       }
 
-      final response = await http.get(
+      final response = await HttpInterceptor.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -144,7 +145,7 @@ class ApiService {
   // Endpoint logout
   static Future<http.Response> logout(String token) async {
     final url = Uri.parse("$baseUrl/auth/logout");
-    return await http.post(
+    return await HttpInterceptor.post(
       url,
       headers: {
         "Content-Type": "application/json",
@@ -187,7 +188,7 @@ class ApiService {
       // Envoyer la requête
       final streamedResponse = await request.send();
 
-      // Convertir en http.Response (plus pratique pour lire body)
+      // Convertir en HttpInterceptor.Response (plus pratique pour lire body)
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -215,7 +216,7 @@ class ApiService {
       }
 
       // Faire la requête GET
-      final response = await http.get(
+      final response = await HttpInterceptor.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -258,7 +259,7 @@ class ApiService {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
       }
       // Faire la requête GET
-      final response = await http.get(
+      final response = await HttpInterceptor.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -291,7 +292,7 @@ class ApiService {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
       }
 
-      final response = await http.get(
+      final response = await HttpInterceptor.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -338,7 +339,7 @@ class ApiService {
       }
 
       // Faire la requête GET
-      final response = await http.get(
+      final response = await HttpInterceptor.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -367,7 +368,7 @@ class ApiService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
-      final response = await http.post(
+      final response = await HttpInterceptor.post(
         url,
         headers: {
           "Content-Type": "application/json",
@@ -400,7 +401,7 @@ class ApiService {
     try {
       final token = await AuthStorage.getToken();
 
-      final response = await http.delete(
+      final response = await HttpInterceptor.delete(
         url,
         headers: {
           "Content-Type": "application/json",
@@ -435,7 +436,7 @@ class ApiService {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
       }
 
-      final response = await http.get(
+      final response = await HttpInterceptor.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -470,7 +471,7 @@ class ApiService {
 
   final url = Uri.parse("$baseUrl/quiz/history");
 
-  final response = await http.get(
+  final response = await HttpInterceptor.get(
   url,
   headers: {
   'Authorization': 'Bearer $token',
@@ -513,7 +514,7 @@ class ApiService {
         throw Exception("Token d'authentification manquant. Veuillez vous reconnecter.");
       }
 
-      final response = await http.get(
+      final response = await HttpInterceptor.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',

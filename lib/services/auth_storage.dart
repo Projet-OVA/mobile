@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class AuthStorage {
   static const String _tokenKey = 'accessToken';
@@ -11,17 +12,17 @@ class AuthStorage {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
   }
-
+  // supprime le token
+  static Future<void> clearToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
+    await prefs.remove('user_id');
+    print(' Tokens supprimés');
+  }
   /// Récupère le token
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
-  }
-
-  /// Supprime le token (pour le logout)
-  static Future<void> clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
   }
 
   /// Sauvegarde le dernier parcours visité
@@ -106,4 +107,26 @@ class AuthStorage {
       }
     }
   }
+  static const String _quizProgressKey = 'quiz_progress';
+
+  /// Sauvegarder la progression du quiz
+  static Future<void> saveQuizProgress(Map<String, dynamic> progress) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_quizProgressKey, jsonEncode(progress));
+  }
+
+  /// Récupérer la progression du quiz
+  static Future<Map<String, dynamic>?> getQuizProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(_quizProgressKey);
+    if (jsonStr == null) return null;
+    return jsonDecode(jsonStr) as Map<String, dynamic>;
+  }
+
+  /// Supprimer la progression (après avoir fini le quiz)
+  static Future<void> clearQuizProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_quizProgressKey);
+  }
+
 }
